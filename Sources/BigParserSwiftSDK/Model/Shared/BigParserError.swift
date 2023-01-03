@@ -8,8 +8,8 @@
 import Foundation
 
 enum BigParserRequestError: Error {
-    case invalidURL
     case emptyResponse
+    case unknownError
 }
 
 
@@ -23,4 +23,8 @@ struct BigParserErrorResponse: Decodable, Error {
         case DATAERROR
         case AUTHERROR
     }
+}
+
+enum BigParserStringResponseError: String, Decodable, Error {
+    case userAlreadyExists = "Email Id is already present."
 }

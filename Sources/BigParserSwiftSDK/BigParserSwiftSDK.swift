@@ -12,7 +12,8 @@ public final class BigParser {
     public var authId: String?
 
     private struct Constants {
-        static let baseURLString: String = "https://qa.BigParser.com/api/v2/"
+        static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
+        static let apiBaseURLString: String = "https://qa.BigParser.com/api/v2/"
     }
 
     private enum HTTPMethod: String {
@@ -21,12 +22,12 @@ public final class BigParser {
 
     // MARK: - Authentication
 
-    public func signUp(_ signUpRequest: SignUpRequest) async throws -> LoginResponse {
-        try await request(method: .POST, path: "common/signup", request: signUpRequest)
+    public func signUp(_ signUpRequest: SignUpRequest) async throws -> SignUpResponse {
+        try await request(baseURLString: Constants.authBaseURLString, method: .POST, path: "common/signup", request: signUpRequest)
     }
 
     public func logIn(_ loginRequest: LoginRequest) async throws -> LoginResponse {
-        let response: LoginResponse = try await request(method: .POST, path: "common/login", request: loginRequest)
+        let response: LoginResponse = try await request(baseURLString: Constants.authBaseURLString, method: .POST, path: "common/login", request: loginRequest)
 
         authId = response.authID
         return response
@@ -39,10 +40,6 @@ public final class BigParser {
     // MARK: - Read operations
 
     public func searchGrid(_ gridId: String, shareId: String? = nil, searchRequest: SearchRequest) async throws -> SearchResponse {
-        try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/distinct", request: searchRequest)
-    }
-
-    public func searchGridDistinct(_ gridId: String, shareId: String? = nil, searchRequest: SearchRequest) async throws -> SearchResponse {
         try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: searchRequest)
     }
 
@@ -60,10 +57,6 @@ public final class BigParser {
 
     public func getSearchKeywordsCount(_ gridId: String, shareId: String? = nil, searchKeywordsCountRequest: SearchKeywordsCountRequest) async throws -> SearchKeywordsCountResponse {
         try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_keywords_count", request: searchKeywordsCountRequest)
-    }
-
-    public func intellisense(_ gridId: String, shareId: String? = nil, intellisenseRequest: IntellisenseRequest) async throws -> IntellisenseResponse {
-        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/query/intellisense", request: intellisenseRequest)
     }
 
     // MARK: - Write operations
@@ -112,10 +105,10 @@ public final class BigParser {
         try await request(method: method, path: path, request: false)
     }
 
-    private func request<Request: Encodable, Response: Decodable>(method: HTTPMethod, path: String, request: Request) async throws -> Response {
+    private func request<Request: Encodable, Response: Decodable>(baseURLString: String = Constants.apiBaseURLString, method: HTTPMethod, path: String, request: Request) async throws -> Response {
         return try await withCheckedThrowingContinuation({
             (continuation: CheckedContinuation<Response, Error>) in
-            let url = URL(string: Constants.baseURLString + path)!
+            let url = URL(string: baseURLString + path)!
             var urlRequest = URLRequest(url: url)
 
             if request is Bool == false {
@@ -144,16 +137,28 @@ public final class BigParser {
                         if let data = data {
                             print("\(String(data: data, encoding: .utf8) ?? "")")
 
-                            // Try parsing Error
-                            do {
-                                let decodedResponse = try JSONDecoder().decode(BigParserErrorResponse.self, from: data)
-                                continuation.resume(throwing: decodedResponse)
-                            } catch {
+                            let errorCode = (response as? HTTPURLResponse)?.statusCode ?? 200
+
+                            switch errorCode {
+                            case 200...299:
                                 do {
                                     let decodedResponse = try JSONDecoder().decode(Response.self, from: data)
                                     continuation.resume(returning: decodedResponse)
                                 } catch {
                                     continuation.resume(throwing: error)
+                                }
+                            default:
+                                // Try parsing Error
+                                do {
+                                    let decodedResponse = try JSONDecoder().decode(BigParserErrorResponse.self, from: data)
+                                    continuation.resume(throwing: decodedResponse)
+                                } catch {
+                                    if let dataString = String(data: data, encoding: .utf8),
+                                       let knownStringError = BigParserStringResponseError(rawValue: dataString) {
+                                        continuation.resume(throwing: knownStringError)
+                                    } else {
+                                        continuation.resume(throwing: BigParserRequestError.unknownError)
+                                    }
                                 }
                             }
                         } else {

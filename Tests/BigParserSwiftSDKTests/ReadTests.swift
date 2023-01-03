@@ -48,30 +48,6 @@ final class ReadTests: XCTestCase {
         wait(for: [expectation], timeout: 3)
     }
 
-    func testSearchGridDistinct() async throws {
-        let expectation = XCTestExpectation(description: "Search")
-
-        let query = SearchRequest.Query(
-            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")],
-                             filtersJoinOperator: .OR),
-            columnFilter: nil,
-            sort: nil,
-            pagination: Pagination(startRow: 0, rowCount: 100)
-        )
-
-        do {
-            let _ = try await BigParser.shared.searchGridDistinct(
-                Constants.gridId,
-                shareId: Constants.shareId,
-                searchRequest: SearchRequest(query: query))
-            expectation.fulfill()
-        } catch {
-            XCTFail("\(error)")
-        }
-
-        wait(for: [expectation], timeout: 3)
-    }
-
     func testGetGridHeader() async throws {
         let expectation = XCTestExpectation(description: "Get grid metadata")
 
@@ -136,22 +112,6 @@ final class ReadTests: XCTestCase {
                 Constants.gridId,
                 shareId: Constants.shareId,
                 searchKeywordsCountRequest: SearchKeywordsCountRequest(query: query))
-            expectation.fulfill()
-        } catch {
-            XCTFail("\(error)")
-        }
-
-        wait(for: [expectation], timeout: 3)
-    }
-
-    func testIntellisense() async throws {
-        let expectation = XCTestExpectation(description: "Intellisense")
-
-        do {
-            let _ = try await BigParser.shared.intellisense(
-                Constants.gridId,
-                intellisenseRequest:
-                    IntellisenseRequest(column: "Storage & Organization", keyword: "Tele", pagination: Pagination(startRow: 0, rowCount: 50), filterOperator: .LIKE))
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")

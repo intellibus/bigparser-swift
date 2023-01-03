@@ -17,6 +17,7 @@ public enum Operator: String, Codable {
     case LT //    Less Than    DATE, DATE_TIME, NUMBER
     case LTE //    Less Than Equals    DATE, DATE_TIME, NUMBER
     case IN //    In query    STRING
+    case DISTINCT
 }
 
 public enum JoinOperator: String, Codable {

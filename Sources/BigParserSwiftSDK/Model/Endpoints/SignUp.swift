@@ -12,3 +12,7 @@ public struct SignUpRequest: Encodable {
     let emailId: String
     let password: String
 }
+
+public struct SignUpResponse: Decodable {
+
+}

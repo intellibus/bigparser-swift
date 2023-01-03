@@ -13,20 +13,47 @@ final class DeleteTests: XCTestCase {
     private struct Constants {
         static let authId = "fcd0b8a0-5fae-449d-a977-0426915f42a0"
         static let gridId = "63b3f7f2afe52c4a2373a9ed"
-        static let row0Id = "63b3f902a360a56c50361641"
+    }
+
+    override func setUpWithError() throws {
+        BigParser.shared.authId = Constants.authId
+    }
+
+    override func tearDownWithError() throws {
+        BigParser.shared.authId = nil
     }
 
     func testDeleteRows() async throws {
         let expectation = XCTestExpectation(description: "Delete rows by Id")
 
         do {
-            let _ = try await BigParser.shared.deleteRows(
+            // Insert a new row
+            let insertResponse = try await BigParser.shared.insertRows(
+                Constants.gridId,
+                insertRowsRequest: InsertRowsRequest(insert:
+                                                        InsertRowsRequest.Insert(rows: [
+                                                            ["Random Number": "\(arc4random() % 100)"]
+                                                        ])
+                                                    )
+            )
+
+            XCTAssertTrue(insertResponse.createdRows.values.count == 1)
+            guard let rowId =  insertResponse.createdRows.values.first else {
+                XCTFail("No row inserted")
+                return
+            }
+
+            // Delete the row again
+            let deleteResponse = try await BigParser.shared.deleteRows(
                 Constants.gridId,
                 deleteRows: DeleteRowsRequest(
-                    delete: DeleteRowsRequest.Delete(rows: [DeleteRowsRequest.DeleteRow(rowId: Constants.row0Id)]
+                    delete: DeleteRowsRequest.Delete(rows: [DeleteRowsRequest.DeleteRow(rowId: rowId)]
                                                     )
                 )
             )
+            XCTAssertTrue(deleteResponse.noOfRowsFailed == 0)
+            XCTAssertTrue(deleteResponse.noOfRowsDeleted == 1)
+            XCTAssertTrue(deleteResponse.deletedRows[0] == rowId)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
@@ -38,11 +65,25 @@ final class DeleteTests: XCTestCase {
     func testDeleteRowsWithQuery() async throws {
         let expectation = XCTestExpectation(description: "Delete rows by Query")
 
-        let globalFilter = GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")],
+        let rowValue = "Test"
+        let globalFilter = GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: rowValue)],
                          filtersJoinOperator: .OR)
 
         do {
-            let _ = try await BigParser.shared.deleteRows(
+
+            // Insert a new row
+            let insertResponse = try await BigParser.shared.insertRows(
+                Constants.gridId,
+                insertRowsRequest: InsertRowsRequest(insert:
+                                                        InsertRowsRequest.Insert(rows: [
+                                                            ["Random Number": rowValue]
+                                                        ])
+                                                    )
+            )
+
+            XCTAssertTrue(insertResponse.createdRows.values.count == 1)
+
+            let deleteResponse = try await BigParser.shared.deleteRows(
                 Constants.gridId,
                 deleteRowsByQueryRequest:
                     DeleteRowsByQueryRequest(delete:
@@ -53,6 +94,7 @@ final class DeleteTests: XCTestCase {
                         )
                     )
             )
+            XCTAssertTrue(deleteResponse.noOfRowsDeleted == 1)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")

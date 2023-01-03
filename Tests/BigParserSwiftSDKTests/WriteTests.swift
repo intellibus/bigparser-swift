@@ -161,7 +161,7 @@ final class WriteTests: XCTestCase {
                         [
                             UpdateColumnDataTypeRequest.Column (
                                 columnName: "Random Number",
-                                dataType: .NUMBER
+                                dataType: .STRING
                             )
                         ]
                 )
