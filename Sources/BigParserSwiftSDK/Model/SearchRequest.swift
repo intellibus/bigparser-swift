@@ -21,43 +21,9 @@ public struct SearchRequest: Codable {
             case globalFilter, columnFilter, sort, pagination
         }
     }
+}
 
-    // MARK: - ColumnFilter
-    struct ColumnFilter: Codable {
-        let filters: [ColumnFilterFilter]
-        let filtersJoinOperator: String
-    }
-
-    // MARK: - ColumnFilterFilter
-    struct ColumnFilterFilter: Codable {
-        let column, filterOperator, keyword: String
-
-        enum CodingKeys: String, CodingKey {
-            case column
-            case filterOperator = "operator"
-            case keyword
-        }
-    }
-
-    // MARK: - GlobalFilter
-    struct GlobalFilter: Codable {
-        let filters: [GlobalFilterFilter]
-        let filtersJoinOperator: String
-    }
-
-    // MARK: - GlobalFilterFilter
-    struct GlobalFilterFilter: Codable {
-        let filterOperator, keyword: String
-
-        enum CodingKeys: String, CodingKey {
-            case filterOperator = "operator"
-            case keyword
-        }
-    }
-
-    // MARK: - Pagination
-    struct Pagination: Codable {
-        let startRow, rowCount: Int
-    }
-
+// MARK: - Pagination
+struct Pagination: Codable {
+    let startRow, rowCount: Int
 }

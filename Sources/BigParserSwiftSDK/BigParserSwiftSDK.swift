@@ -64,6 +64,20 @@ public final class BigParser {
         try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_rowIds", request: updateRowsRequest)
     }
 
+    public func updateRows(_ gridId: String, shareId: String? = nil, updateRowsByQueryRequest: UpdateRowsByQueryRequest) async throws -> UpdateRowsByQueryResponse {
+        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_queryObj", request: updateRowsByQueryRequest)
+    }
+
+    // MARK: - Delete operations
+
+    public func deleteRows(_ gridId: String, shareId: String? = nil, deleteRows: DeleteRowsRequest) async throws -> DeleteRowsResponse {
+        try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_rowIds", request: deleteRows)
+    }
+
+    public func deleteRows(_ gridId: String, shareId: String? = nil, deleteRowsByQueryRequest: DeleteRowsByQueryRequest) async throws -> DeleteRowsByQueryResponse {
+        try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_queryObj", request: deleteRowsByQueryRequest)
+    }
+
     // MARK: - Convenience
 
     private func gridPath(_ gridId: String, shareId: String? = nil) -> String {

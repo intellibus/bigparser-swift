@@ -28,11 +28,11 @@ final class QueryTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Search")
 
         let query = SearchRequest.Query(
-            globalFilter: SearchRequest.GlobalFilter(filters: [SearchRequest.GlobalFilterFilter(filterOperator: "LIKE", keyword: "Paper")],
+            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: "LIKE", keyword: "Paper")],
                              filtersJoinOperator: "OR"),
             columnFilter: nil,
             sort: nil,
-            pagination: SearchRequest.Pagination(startRow: 0, rowCount: 100)
+            pagination: Pagination(startRow: 0, rowCount: 100)
         )
 
         do {

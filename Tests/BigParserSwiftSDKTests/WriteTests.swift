@@ -13,7 +13,6 @@ final class WriteTests: XCTestCase {
     private struct Constants {
         static let authId = "fcd0b8a0-5fae-449d-a977-0426915f42a0"
         static let gridId = "63b3f7f2afe52c4a2373a9ed"
-
         static let row0Id = "63b3f902a360a56c50361641"
         static let row1Id = "63b3f902a360a56c50361642"
     }
@@ -115,6 +114,32 @@ final class WriteTests: XCTestCase {
                                                                 ])
                                                         ])
                                                     )
+            )
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testUpdateRowsByQuery() async throws {
+        let expectation = XCTestExpectation(description: "Update row")
+
+        let globalFilter = GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: "LIKE", keyword: "Paper")],
+                         filtersJoinOperator: "OR")
+
+        do {
+            let _ = try await BigParser.shared.updateRows(
+                Constants.gridId,
+                updateRowsByQueryRequest:
+                    UpdateRowsByQueryRequest(update: UpdateRowsByQueryRequest.Update(
+                        columns: ["Random Number": "\(arc4random() % 100)"]),
+                        query: UpdateRowsByQueryRequest.Query(
+                            columnFilter: nil,
+                            globalFilter: globalFilter
+                        )
+                    )
             )
             expectation.fulfill()
         } catch {

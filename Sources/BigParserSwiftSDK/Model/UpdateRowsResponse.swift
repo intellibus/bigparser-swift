@@ -9,6 +9,6 @@ import Foundation
 
 public struct UpdateRowsResponse: Codable {
     let noOfRowsUpdated, noOfRowsFailed: Int
-    let createdRows: [String: String]
+    let updatedRows: [String: String]
     let failedRows: [String: String]
 }
