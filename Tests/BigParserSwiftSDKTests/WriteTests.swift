@@ -126,8 +126,8 @@ final class WriteTests: XCTestCase {
     func testUpdateRowsByQuery() async throws {
         let expectation = XCTestExpectation(description: "Update row")
 
-        let globalFilter = GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: "LIKE", keyword: "Paper")],
-                         filtersJoinOperator: "OR")
+        let globalFilter = GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")],
+                         filtersJoinOperator: .OR)
 
         do {
             let _ = try await BigParser.shared.updateRows(
@@ -140,6 +140,31 @@ final class WriteTests: XCTestCase {
                             globalFilter: globalFilter
                         )
                     )
+            )
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testUpdateColumnDataType() async throws {
+        let expectation = XCTestExpectation(description: "Update column data type")
+
+
+        do {
+            let _ = try await BigParser.shared.updateColumnDataType(
+                Constants.gridId,
+                updateColumnDataTypeRequest:
+                    UpdateColumnDataTypeRequest(columns:
+                        [
+                            UpdateColumnDataTypeRequest.Column (
+                                columnName: "Random Number",
+                                dataType: .NUMBER
+                            )
+                        ]
+                )
             )
             expectation.fulfill()
         } catch {

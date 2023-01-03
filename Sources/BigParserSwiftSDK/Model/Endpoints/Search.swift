@@ -1,5 +1,5 @@
 //
-//  SearchRequest.swift
+//  Search.swift
 //  
 //
 //  Created by Miroslav Kutak on 01/02/2023.
@@ -23,7 +23,7 @@ public struct SearchRequest: Codable {
     }
 }
 
-// MARK: - Pagination
-struct Pagination: Codable {
-    let startRow, rowCount: Int
+public struct SearchResponse: Decodable {
+    let totalRowCount: Int
+    let rows: [[String]]
 }

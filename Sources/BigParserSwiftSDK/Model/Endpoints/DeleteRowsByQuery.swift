@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  DeleteRowsByQuery.swift
 //  
 //
 //  Created by Miroslav Kutak on 01/03/2023.
@@ -20,4 +20,8 @@ public struct DeleteRowsByQueryRequest: Codable {
         let columnFilter: ColumnFilter?
         let globalFilter: GlobalFilter?
     }
+}
+
+public struct DeleteRowsByQueryResponse: Codable {
+    let noOfRowsDeleted: Int
 }

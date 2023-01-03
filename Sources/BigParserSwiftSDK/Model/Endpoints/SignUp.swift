@@ -1,5 +1,5 @@
 //
-//  SignUpRequest.swift
+//  SignUp.swift
 //  
 //
 //  Created by Miroslav Kutak on 01/02/2023.

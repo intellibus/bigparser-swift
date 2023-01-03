@@ -28,8 +28,8 @@ final class ReadTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Search")
 
         let query = SearchRequest.Query(
-            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: "LIKE", keyword: "Paper")],
-                             filtersJoinOperator: "OR"),
+            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")],
+                             filtersJoinOperator: .OR),
             columnFilter: nil,
             sort: nil,
             pagination: Pagination(startRow: 0, rowCount: 100)
@@ -52,8 +52,8 @@ final class ReadTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Search")
 
         let query = SearchRequest.Query(
-            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: "LIKE", keyword: "Paper")],
-                             filtersJoinOperator: "OR"),
+            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")],
+                             filtersJoinOperator: .OR),
             columnFilter: nil,
             sort: nil,
             pagination: Pagination(startRow: 0, rowCount: 100)
@@ -92,6 +92,66 @@ final class ReadTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.getMultiSheetMetadata(Constants.gridId, shareId: Constants.shareId)
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testSearchCount() async throws {
+        let expectation = XCTestExpectation(description: "Search Count")
+
+        let query = SearchCountRequest.Query(
+            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")],
+                             filtersJoinOperator: .OR),
+            columnFilter: nil
+        )
+
+        do {
+            let _ = try await BigParser.shared.getSearchCount(
+                Constants.gridId,
+                shareId: Constants.shareId,
+                searchCountRequest: SearchCountRequest(query: query))
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testSearchKeywordsCount() async throws {
+        let expectation = XCTestExpectation(description: "Search Keywords Count")
+
+        let query = SearchKeywordsCountRequest.Query(
+            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")],
+                             filtersJoinOperator: .OR),
+            columnFilter: nil
+        )
+
+        do {
+            let _ = try await BigParser.shared.getSearchKeywordsCount(
+                Constants.gridId,
+                shareId: Constants.shareId,
+                searchKeywordsCountRequest: SearchKeywordsCountRequest(query: query))
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testIntellisense() async throws {
+        let expectation = XCTestExpectation(description: "Intellisense")
+
+        do {
+            let _ = try await BigParser.shared.intellisense(
+                Constants.gridId,
+                intellisenseRequest:
+                    IntellisenseRequest(column: "Storage & Organization", keyword: "Tele", pagination: Pagination(startRow: 0, rowCount: 50), filterOperator: .LIKE))
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")

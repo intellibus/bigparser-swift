@@ -7,7 +7,6 @@
 
 import Foundation
 
-public struct SearchResponse: Decodable {
-    let totalRowCount: Int
-    let rows: [[String]]
+struct Pagination: Codable {
+    let startRow, rowCount: Int
 }

@@ -1,5 +1,5 @@
 //
-//  UpdateRowsRequest.swift
+//  UpdateRows.swift
 //  
 //
 //  Created by Miroslav Kutak on 01/03/2023.
@@ -19,4 +19,10 @@ public struct UpdateRowsRequest: Codable {
         let rowId: String
         let columns: [String: String]
     }
+}
+
+public struct UpdateRowsResponse: Codable {
+    let noOfRowsUpdated, noOfRowsFailed: Int
+    let updatedRows: [String]
+    let failedRows: [String: String]
 }

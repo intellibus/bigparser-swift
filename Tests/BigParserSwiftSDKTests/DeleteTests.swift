@@ -19,7 +19,6 @@ final class DeleteTests: XCTestCase {
     func testDeleteRows() async throws {
         let expectation = XCTestExpectation(description: "Delete rows by Id")
 
-
         do {
             let _ = try await BigParser.shared.deleteRows(
                 Constants.gridId,
@@ -39,8 +38,8 @@ final class DeleteTests: XCTestCase {
     func testDeleteRowsWithQuery() async throws {
         let expectation = XCTestExpectation(description: "Delete rows by Query")
 
-        let globalFilter = GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: "LIKE", keyword: "Paper")],
-                         filtersJoinOperator: "OR")
+        let globalFilter = GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")],
+                         filtersJoinOperator: .OR)
 
         do {
             let _ = try await BigParser.shared.deleteRows(

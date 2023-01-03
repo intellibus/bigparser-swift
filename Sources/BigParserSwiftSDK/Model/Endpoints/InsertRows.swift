@@ -1,5 +1,5 @@
 //
-//  InsertRowsRequest.swift
+//  InsertRows.swift
 //  
 //
 //  Created by Miroslav Kutak on 01/03/2023.
@@ -14,4 +14,10 @@ public struct InsertRowsRequest: Codable {
     struct Insert: Codable {
         let rows: [[String: String]]
     }
+}
+
+public struct InsertRowsResponse: Codable {
+    let noOfRowsCreated, noOfRowsFailed: Int
+    let createdRows: [String: String]
+    let failedRows: [String: String]
 }

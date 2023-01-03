@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  UpdateRowsByQuery.swift
 //  
 //
 //  Created by Miroslav Kutak on 01/03/2023.
@@ -22,4 +22,8 @@ public struct UpdateRowsByQueryRequest: Codable {
         let columnFilter: ColumnFilter?
         let globalFilter: GlobalFilter?
     }
+}
+
+public struct UpdateRowsByQueryResponse: Codable {
+    let noOfRowsUpdated: Int
 }

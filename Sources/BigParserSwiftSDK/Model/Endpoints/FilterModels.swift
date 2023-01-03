@@ -11,11 +11,12 @@ import Foundation
 // MARK: - ColumnFilter
 public struct ColumnFilter: Codable {
     let filters: [Filter]
-    let filtersJoinOperator: String
+    let filtersJoinOperator: JoinOperator
 
     // MARK: - ColumnFilterFilter
     struct Filter: Codable {
-        let column, filterOperator, keyword: String
+        let column, keyword: String
+        let filterOperator: Operator
 
         enum CodingKeys: String, CodingKey {
             case column
@@ -28,12 +29,13 @@ public struct ColumnFilter: Codable {
 // MARK: - GlobalFilter
 public struct GlobalFilter: Codable {
     let filters: [Filter]
-    let filtersJoinOperator: String
+    let filtersJoinOperator: JoinOperator
 
 
     // MARK: - GlobalFilterFilter
     struct Filter: Codable {
-        let filterOperator, keyword: String
+        let filterOperator: Operator
+        let keyword: String
 
         enum CodingKeys: String, CodingKey {
             case filterOperator = "operator"

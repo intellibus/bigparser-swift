@@ -16,7 +16,7 @@ public final class BigParser {
     }
 
     private enum HTTPMethod: String {
-        case GET, POST, DELETE, PATCH
+        case GET, PUT, POST, DELETE, PATCH
     }
 
     // MARK: - Authentication
@@ -39,7 +39,7 @@ public final class BigParser {
     // MARK: - Read operations
 
     public func searchGrid(_ gridId: String, shareId: String? = nil, searchRequest: SearchRequest) async throws -> SearchResponse {
-        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/distinct", request: searchRequest)
+        try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/distinct", request: searchRequest)
     }
 
     public func searchGridDistinct(_ gridId: String, shareId: String? = nil, searchRequest: SearchRequest) async throws -> SearchResponse {
@@ -54,6 +54,18 @@ public final class BigParser {
         try await request(method: .GET, path: "\(gridPath(gridId, shareId: shareId))/query_multisheet_metadata")
     }
 
+    public func getSearchCount(_ gridId: String, shareId: String? = nil, searchCountRequest: SearchCountRequest) async throws -> SearchCountResponse {
+        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_count", request: searchCountRequest)
+    }
+
+    public func getSearchKeywordsCount(_ gridId: String, shareId: String? = nil, searchKeywordsCountRequest: SearchKeywordsCountRequest) async throws -> SearchKeywordsCountResponse {
+        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_keywords_count", request: searchKeywordsCountRequest)
+    }
+
+    public func intellisense(_ gridId: String, shareId: String? = nil, intellisenseRequest: IntellisenseRequest) async throws -> IntellisenseResponse {
+        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/query/intellisense", request: intellisenseRequest)
+    }
+
     // MARK: - Write operations
 
     public func createGrid(_ gridId: String, searchRequest: SearchRequest) async throws -> LoginResponse {
@@ -65,11 +77,15 @@ public final class BigParser {
     }
 
     public func updateRows(_ gridId: String, shareId: String? = nil, updateRowsRequest: UpdateRowsRequest) async throws -> UpdateRowsResponse {
-        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_rowIds", request: updateRowsRequest)
+        try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_rowIds", request: updateRowsRequest)
     }
 
     public func updateRows(_ gridId: String, shareId: String? = nil, updateRowsByQueryRequest: UpdateRowsByQueryRequest) async throws -> UpdateRowsByQueryResponse {
-        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_queryObj", request: updateRowsByQueryRequest)
+        try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_queryObj", request: updateRowsByQueryRequest)
+    }
+
+    public func updateColumnDataType(_ gridId: String, shareId: String? = nil, updateColumnDataTypeRequest: UpdateColumnDataTypeRequest) async throws -> UpdateColumnDataTypeResponse {
+        try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/update_column_datatype", request: updateColumnDataTypeRequest)
     }
 
     // MARK: - Delete operations
@@ -127,15 +143,15 @@ public final class BigParser {
                     } else {
                         if let data = data {
                             print("\(String(data: data, encoding: .utf8) ?? "")")
+
+                            // Try parsing Error
                             do {
-                                let decodedResponse = try JSONDecoder().decode(Response.self, from: data)
-                                continuation.resume(returning: decodedResponse)
+                                let decodedResponse = try JSONDecoder().decode(BigParserErrorResponse.self, from: data)
+                                continuation.resume(throwing: decodedResponse)
                             } catch {
-                                print(error)
-                                // Try parsing Error
                                 do {
-                                    let decodedResponse = try JSONDecoder().decode(BigParserErrorResponse.self, from: data)
-                                    continuation.resume(throwing: decodedResponse)
+                                    let decodedResponse = try JSONDecoder().decode(Response.self, from: data)
+                                    continuation.resume(returning: decodedResponse)
                                 } catch {
                                     continuation.resume(throwing: error)
                                 }
