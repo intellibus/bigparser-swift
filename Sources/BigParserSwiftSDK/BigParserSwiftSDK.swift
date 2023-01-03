@@ -39,6 +39,10 @@ public final class BigParser {
     // MARK: - Read operations
 
     public func searchGrid(_ gridId: String, shareId: String? = nil, searchRequest: SearchRequest) async throws -> SearchResponse {
+        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/distinct", request: searchRequest)
+    }
+
+    public func searchGridDistinct(_ gridId: String, shareId: String? = nil, searchRequest: SearchRequest) async throws -> SearchResponse {
         try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: searchRequest)
     }
 

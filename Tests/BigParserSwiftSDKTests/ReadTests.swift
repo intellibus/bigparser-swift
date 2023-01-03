@@ -8,7 +8,7 @@
 import XCTest
 @testable import BigParserSwiftSDK
 
-final class QueryTests: XCTestCase {
+final class ReadTests: XCTestCase {
 
     private struct Constants {
         static let authId = "fcd0b8a0-5fae-449d-a977-0426915f42a0"
@@ -37,6 +37,30 @@ final class QueryTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.searchGrid(
+                Constants.gridId,
+                shareId: Constants.shareId,
+                searchRequest: SearchRequest(query: query))
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testSearchGridDistinct() async throws {
+        let expectation = XCTestExpectation(description: "Search")
+
+        let query = SearchRequest.Query(
+            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: "LIKE", keyword: "Paper")],
+                             filtersJoinOperator: "OR"),
+            columnFilter: nil,
+            sort: nil,
+            pagination: Pagination(startRow: 0, rowCount: 100)
+        )
+
+        do {
+            let _ = try await BigParser.shared.searchGridDistinct(
                 Constants.gridId,
                 shareId: Constants.shareId,
                 searchRequest: SearchRequest(query: query))
