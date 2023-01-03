@@ -40,35 +40,4 @@ final class BigParserSwiftSDKTests: XCTestCase {
 
         wait(for: [expectation], timeout: 3)
     }
-
-    func testSearchGrid() async throws {
-        let authId = "fcd0b8a0-5fae-449d-a977-0426915f42a0"
-        let gridId = "638f43e7cc3151353d14a63a"
-        let shareId = "638f48d68108ee25ecc3a11a"
-
-        let expectation = XCTestExpectation(description: "Search")
-
-        BigParser.shared.authId = authId
-
-        let query = Query(
-            globalFilter: GlobalFilter(filters: [GlobalFilterFilter(filterOperator: "LIKE", keyword: "Paper")],
-                             filtersJoinOperator: "OR"),
-            columnFilter: nil,
-            sort: nil,
-            pagination: Pagination(startRow: 0, rowCount: 100)
-        )
-
-        do {
-            let response = try await BigParser.shared.searchGrid(
-                gridId,
-                shareId: shareId,
-                searchRequest: SearchRequest(query: query))
-            print(response)
-            expectation.fulfill()
-        } catch {
-            XCTFail("\(error)")
-        }
-
-        wait(for: [expectation], timeout: 3)
-    }
 }

@@ -24,43 +24,44 @@ public struct LoginResponse: Decodable {
         case authID = "authId"
         case subscriptionInfo, userPreference, userStatus, userinfo
     }
-}
 
-// MARK: - SubscriptionInfo
-struct SubscriptionInfo: Codable {
-    let subscriptionType, orderGridID: String
+    // MARK: - SubscriptionInfo
+    struct SubscriptionInfo: Codable {
+        let subscriptionType, orderGridID: String
 
-    enum CodingKeys: String, CodingKey {
-        case subscriptionType
-        case orderGridID = "orderGridId"
+        enum CodingKeys: String, CodingKey {
+            case subscriptionType
+            case orderGridID = "orderGridId"
+        }
     }
-}
 
-// MARK: - UserPreference
-struct UserPreference: Codable {
-    let notificationType: NotificationType
-}
-
-// MARK: - NotificationType
-struct NotificationType: Codable {
-    let gridPage, myData: Bool
-
-    enum CodingKeys: String, CodingKey {
-        case gridPage = "GRID_PAGE"
-        case myData = "MY_DATA"
+    // MARK: - UserPreference
+    struct UserPreference: Codable {
+        let notificationType: NotificationType
     }
-}
 
-// MARK: - Userinfo
-struct Userinfo: Codable {
-    let id, fullName, emailID, dataStreamID: String
-    let gridStreamID, role: String
+    // MARK: - NotificationType
+    struct NotificationType: Codable {
+        let gridPage, myData: Bool
 
-    enum CodingKeys: String, CodingKey {
-        case id, fullName
-        case emailID = "emailId"
-        case dataStreamID = "dataStreamId"
-        case gridStreamID = "gridStreamId"
-        case role
+        enum CodingKeys: String, CodingKey {
+            case gridPage = "GRID_PAGE"
+            case myData = "MY_DATA"
+        }
     }
+
+    // MARK: - Userinfo
+    struct Userinfo: Codable {
+        let id, fullName, emailID, dataStreamID: String
+        let gridStreamID, role: String
+
+        enum CodingKeys: String, CodingKey {
+            case id, fullName
+            case emailID = "emailId"
+            case dataStreamID = "dataStreamId"
+            case gridStreamID = "gridStreamId"
+            case role
+        }
+    }
+
 }
