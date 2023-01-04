@@ -9,16 +9,11 @@ import Foundation
 
 // No request JSON - it's a GET method
 
-public struct GetMultiSheetMetadataResponse: Codable {
+public struct GetMultiSheetMetadataResponse: Decodable {
     let grids: [Grid]
 
     // MARK: - Grid
-    public struct Grid: Codable {
-        let gridID, name: String
-
-        enum CodingKeys: String, CodingKey {
-            case gridID = "gridId"
-            case name
-        }
+    public struct Grid: Decodable {
+        let gridId, name: String
     }
 }

@@ -7,19 +7,15 @@
 
 import Foundation
 
-public struct SearchRequest: Codable {
+public struct SearchRequest: Encodable {
     let query: Query
 
     // MARK: - Query
-    struct Query: Codable {
+    public struct Query: Encodable {
         let globalFilter: GlobalFilter
         let columnFilter: ColumnFilter?
         let sort: [String: SortDirection]?
         let pagination: Pagination
-
-        enum CodingKeys: String, CodingKey {
-            case globalFilter, columnFilter, sort, pagination
-        }
     }
 }
 

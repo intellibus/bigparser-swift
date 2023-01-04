@@ -7,16 +7,16 @@
 
 import Foundation
 
-public struct UpdateColumnDataTypeRequest: Codable {
+public struct UpdateColumnDataTypeRequest: Encodable {
     let columns: [Column]
 
     // MARK: - Column
-    struct Column: Codable {
+    public struct Column: Encodable {
         let columnName: String
         let dataType: DataType
     }
 }
 
-public struct UpdateColumnDataTypeResponse: Codable {
+public struct UpdateColumnDataTypeResponse: Decodable {
 
 }

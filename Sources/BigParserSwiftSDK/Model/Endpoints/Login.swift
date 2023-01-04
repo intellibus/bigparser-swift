@@ -14,54 +14,31 @@ public struct LoginRequest: Encodable {
 }
 
 public struct LoginResponse: Decodable {
-    let authID: String
+    let authId: String
     let subscriptionInfo: SubscriptionInfo
     let userPreference: UserPreference
     let userStatus: String
     let userinfo: Userinfo
 
-    enum CodingKeys: String, CodingKey {
-        case authID = "authId"
-        case subscriptionInfo, userPreference, userStatus, userinfo
-    }
-
     // MARK: - SubscriptionInfo
-    struct SubscriptionInfo: Codable {
-        let subscriptionType, orderGridID: String
-
-        enum CodingKeys: String, CodingKey {
-            case subscriptionType
-            case orderGridID = "orderGridId"
-        }
+    public struct SubscriptionInfo: Decodable {
+        let subscriptionType, orderGridId: String
     }
 
     // MARK: - UserPreference
-    struct UserPreference: Codable {
+    public struct UserPreference: Decodable {
         let notificationType: NotificationType
     }
 
     // MARK: - NotificationType
-    struct NotificationType: Codable {
-        let gridPage, myData: Bool
-
-        enum CodingKeys: String, CodingKey {
-            case gridPage = "GRID_PAGE"
-            case myData = "MY_DATA"
-        }
+    struct NotificationType: Decodable {
+        let GRID_PAGE, MY_DATA: Bool
     }
 
     // MARK: - Userinfo
-    struct Userinfo: Codable {
-        let id, fullName, emailID, dataStreamID: String
-        let gridStreamID, role: String
-
-        enum CodingKeys: String, CodingKey {
-            case id, fullName
-            case emailID = "emailId"
-            case dataStreamID = "dataStreamId"
-            case gridStreamID = "gridStreamId"
-            case role
-        }
+    public struct Userinfo: Decodable {
+        let id, fullName, emailId, dataStreamId: String
+        let gridStreamId, role: String
     }
 
 }

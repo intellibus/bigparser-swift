@@ -29,7 +29,7 @@ public final class BigParser {
     public func logIn(_ loginRequest: LoginRequest) async throws -> LoginResponse {
         let response: LoginResponse = try await request(baseURLString: Constants.authBaseURLString, method: .POST, path: "common/login", request: loginRequest)
 
-        authId = response.authID
+        authId = response.authId
         return response
     }
 

@@ -7,23 +7,23 @@
 
 import Foundation
 
-public struct UpdateRowsByQueryRequest: Codable {
+public struct UpdateRowsByQueryRequest: Encodable {
     let update: Update
     let query: Query
 
 
     // MARK: - Update
-    struct Update: Codable {
+    public struct Update: Encodable {
         let columns: [String: String]
     }
 
     // MARK: - Query
-    struct Query: Codable {
+    public struct Query: Encodable {
         let columnFilter: ColumnFilter?
         let globalFilter: GlobalFilter?
     }
 }
 
-public struct UpdateRowsByQueryResponse: Codable {
+public struct UpdateRowsByQueryResponse: Decodable {
     let noOfRowsUpdated: Int
 }

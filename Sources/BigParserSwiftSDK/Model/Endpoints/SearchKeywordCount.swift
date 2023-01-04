@@ -7,21 +7,17 @@
 
 import Foundation
 
-public struct SearchKeywordsCountRequest: Codable {
+public struct SearchKeywordsCountRequest: Encodable {
     let query: Query
 
     // MARK: - Query
-    struct Query: Codable {
+    struct Query: Encodable {
         let globalFilter: GlobalFilter?
         let columnFilter: ColumnFilter?
-
-        enum CodingKeys: String, CodingKey {
-            case globalFilter, columnFilter
-        }
     }
 }
 
-public struct SearchKeywordsCountResponse: Codable {
+public struct SearchKeywordsCountResponse: Decodable {
     let globalFilterCount: [Int]
     let columnFilterCount: [Int]
 }

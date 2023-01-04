@@ -7,20 +7,20 @@
 
 import Foundation
 
-public struct DeleteRowsRequest: Codable {
+public struct DeleteRowsRequest: Encodable {
     let delete: Delete
 
     // MARK: - Update
-    struct Delete: Codable {
+    public struct Delete: Encodable {
         let rows: [DeleteRow]
     }
 
-    struct DeleteRow: Codable {
+    public struct DeleteRow: Encodable {
         let rowId: String
     }
 }
 
-public struct DeleteRowsResponse: Codable {
+public struct DeleteRowsResponse: Decodable {
     let noOfRowsDeleted, noOfRowsFailed: Int
     let deletedRows: [String]
     let failedRows: [String: String]

@@ -9,12 +9,12 @@ import Foundation
 
 
 // MARK: - ColumnFilter
-public struct ColumnFilter: Codable {
+public struct ColumnFilter: Encodable {
     let filters: [Filter]
     let filtersJoinOperator: JoinOperator
 
     // MARK: - ColumnFilterFilter
-    struct Filter: Codable {
+    public struct Filter: Encodable {
         let column, keyword: String
         let filterOperator: Operator
 
@@ -27,13 +27,12 @@ public struct ColumnFilter: Codable {
 }
 
 // MARK: - GlobalFilter
-public struct GlobalFilter: Codable {
+public struct GlobalFilter: Encodable {
     let filters: [Filter]
     let filtersJoinOperator: JoinOperator
 
-
     // MARK: - GlobalFilterFilter
-    struct Filter: Codable {
+    public struct Filter: Encodable {
         let filterOperator: Operator
         let keyword: String
 

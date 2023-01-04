@@ -7,21 +7,21 @@
 
 import Foundation
 
-public struct UpdateRowsRequest: Codable {
+public struct UpdateRowsRequest: Encodable {
     let update: Update
 
     // MARK: - Update
-    struct Update: Codable {
+    public struct Update: Encodable {
         let rows: [UpdateRow]
     }
 
-    struct UpdateRow: Codable {
+    public struct UpdateRow: Encodable {
         let rowId: String
         let columns: [String: String]
     }
 }
 
-public struct UpdateRowsResponse: Codable {
+public struct UpdateRowsResponse: Decodable {
     let noOfRowsUpdated, noOfRowsFailed: Int
     let updatedRows: [String]
     let failedRows: [String: String]

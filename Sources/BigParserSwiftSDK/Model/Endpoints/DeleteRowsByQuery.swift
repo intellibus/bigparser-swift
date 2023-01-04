@@ -7,21 +7,21 @@
 
 import Foundation
 
-public struct DeleteRowsByQueryRequest: Codable {
+public struct DeleteRowsByQueryRequest: Encodable {
     let delete: Delete
 
     // MARK: - Update
-    struct Delete: Codable {
+    public struct Delete: Encodable {
         let query: Query
     }
 
     // MARK: - Query
-    struct Query: Codable {
+    public struct Query: Encodable {
         let columnFilter: ColumnFilter?
         let globalFilter: GlobalFilter?
     }
 }
 
-public struct DeleteRowsByQueryResponse: Codable {
+public struct DeleteRowsByQueryResponse: Decodable {
     let noOfRowsDeleted: Int
 }

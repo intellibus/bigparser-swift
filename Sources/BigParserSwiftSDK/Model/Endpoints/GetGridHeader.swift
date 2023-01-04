@@ -9,22 +9,14 @@ import Foundation
 
 // No request JSON - it's a GET method
 
-public struct GetGridHeaderResponse: Codable {
+public struct GetGridHeaderResponse: Decodable {
     let name: String
     let description: String?
     let columns: [Column]
-    let fileID, fileExtension, fileSource: String?
-
-    enum CodingKeys: String, CodingKey {
-        case name
-        case description
-        case columns
-        case fileID = "fileId"
-        case fileExtension, fileSource
-    }
+    let fileId, fileExtension, fileSource: String?
 
     // MARK: - Columns
-    public struct Column: Codable {
+    public struct Column: Decodable {
         let columnName, columnDesc, dataType, columnIndex: String
         let islinkedColumn, isPrimaryLink: Bool
     }
