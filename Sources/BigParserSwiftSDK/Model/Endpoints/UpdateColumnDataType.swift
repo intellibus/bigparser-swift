@@ -15,6 +15,10 @@ public struct UpdateColumnDataTypeRequest: Encodable {
         let columnName: String
         let dataType: DataType
     }
+
+    public init(columns: [Column]) {
+        self.columns = columns
+    }
 }
 
 public struct UpdateColumnDataTypeResponse: Decodable {

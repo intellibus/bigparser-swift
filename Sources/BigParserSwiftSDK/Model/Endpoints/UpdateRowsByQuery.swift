@@ -24,6 +24,19 @@ public struct UpdateRowsByQueryRequest: Encodable {
     }
 }
 
+public extension UpdateRowsByQueryRequest {
+    init(
+        columns: [String: String],
+        columnFilter: ColumnFilter? = nil,
+        globalFilter: GlobalFilter? = nil
+    ) {
+        self.init(
+            update: Update(columns: columns),
+            query: Query(columnFilter: columnFilter, globalFilter: globalFilter)
+        )
+    }
+}
+
 public struct UpdateRowsByQueryResponse: Decodable {
     let noOfRowsUpdated: Int
 }

@@ -11,11 +11,22 @@ public struct SearchRequest: Encodable {
     let query: Query
 
     // MARK: - Query
-    public struct Query: Encodable {
-        let globalFilter: GlobalFilter
+    struct Query: Encodable {
+        let globalFilter: GlobalFilter?
         let columnFilter: ColumnFilter?
         let sort: [String: SortDirection]?
         let pagination: Pagination
+    }
+}
+
+public extension SearchRequest {
+    init(
+        globalFilter: GlobalFilter? = nil,
+        columnFilter: ColumnFilter? = nil,
+        sort: [String: SortDirection]? = nil,
+        pagination: Pagination
+    ) {
+        self.init(query: Query(globalFilter: globalFilter, columnFilter: columnFilter, sort: sort, pagination: pagination))
     }
 }
 

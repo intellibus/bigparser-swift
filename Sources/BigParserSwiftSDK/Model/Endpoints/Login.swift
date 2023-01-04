@@ -13,6 +13,12 @@ public struct LoginRequest: Encodable {
     let loggedIn: Bool
 }
 
+public extension LoginRequest {
+    init(emailId: String, password: String) {
+        self.init(emailId: emailId, password: password, loggedIn: true)
+    }
+}
+
 public struct LoginResponse: Decodable {
     let authId: String
     let subscriptionInfo: SubscriptionInfo

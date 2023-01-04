@@ -16,6 +16,12 @@ public struct InsertRowsRequest: Encodable {
     }
 }
 
+public extension InsertRowsRequest {
+    init(rows: [[String: String]]) {
+        self.init(insert: Insert(rows: rows))
+    }
+}
+
 public struct InsertRowsResponse: Decodable {
     let noOfRowsCreated, noOfRowsFailed: Int
     let createdRows: [String: String]

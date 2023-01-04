@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct Pagination: Codable {
+public struct Pagination: Codable {
     let startRow, rowCount: Int
 }

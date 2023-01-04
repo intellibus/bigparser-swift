@@ -7,6 +7,6 @@
 
 import Foundation
 
-enum SortDirection: String, Codable {
+public enum SortDirection: String, Codable {
     case asc, desc
 }

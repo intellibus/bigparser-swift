@@ -17,6 +17,15 @@ public struct SearchKeywordsCountRequest: Encodable {
     }
 }
 
+public extension SearchKeywordsCountRequest {
+    init(
+        globalFilter: GlobalFilter? = nil,
+        columnFilter: ColumnFilter? = nil
+    ) {
+        self.init(query: Query(globalFilter: globalFilter, columnFilter: columnFilter))
+    }
+}
+
 public struct SearchKeywordsCountResponse: Decodable {
     let globalFilterCount: [Int]
     let columnFilterCount: [Int]

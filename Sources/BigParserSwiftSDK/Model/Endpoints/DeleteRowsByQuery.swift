@@ -11,14 +11,20 @@ public struct DeleteRowsByQueryRequest: Encodable {
     let delete: Delete
 
     // MARK: - Update
-    public struct Delete: Encodable {
+    struct Delete: Encodable {
         let query: Query
     }
 
     // MARK: - Query
-    public struct Query: Encodable {
+    struct Query: Encodable {
         let columnFilter: ColumnFilter?
         let globalFilter: GlobalFilter?
+    }
+}
+
+public extension DeleteRowsByQueryRequest {
+    init(columnFilter: ColumnFilter? = nil, globalFilter: GlobalFilter? = nil) {
+        self.init(delete: Delete(query: Query(columnFilter: columnFilter, globalFilter: globalFilter)))
     }
 }
 

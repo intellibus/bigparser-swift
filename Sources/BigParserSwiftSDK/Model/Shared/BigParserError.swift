@@ -7,24 +7,24 @@
 
 import Foundation
 
-enum BigParserRequestError: Error {
+public enum BigParserRequestError: Error {
     case emptyResponse
     case unknownError
 }
 
 
-struct BigParserErrorResponse: Decodable, Error {
+public struct BigParserErrorResponse: Decodable, Error {
     let errorMessage: String
     let errorType: ErrorType
 
     // TODO: fill up all the valid types and replace errorType's String type with ErrorType
-    enum ErrorType: String, Decodable {
+    public enum ErrorType: String, Decodable {
         case SYSTEMERROR
         case DATAERROR
         case AUTHERROR
     }
 }
 
-enum BigParserStringResponseError: String, Decodable, Error {
+public enum BigParserStringResponseError: String, Decodable, Error {
     case userAlreadyExists = "Email Id is already present."
 }

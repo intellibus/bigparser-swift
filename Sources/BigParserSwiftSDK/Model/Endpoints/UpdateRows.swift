@@ -11,13 +11,19 @@ public struct UpdateRowsRequest: Encodable {
     let update: Update
 
     // MARK: - Update
-    public struct Update: Encodable {
+    struct Update: Encodable {
         let rows: [UpdateRow]
     }
 
     public struct UpdateRow: Encodable {
         let rowId: String
         let columns: [String: String]
+    }
+}
+
+public extension UpdateRowsRequest {
+    init(rows: [UpdateRow]) {
+        self.init(update: Update(rows: rows))
     }
 }
 

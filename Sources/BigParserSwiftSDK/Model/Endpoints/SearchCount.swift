@@ -17,6 +17,15 @@ public struct SearchCountRequest: Encodable {
     }
 }
 
+public extension SearchCountRequest {
+    init(
+        globalFilter: GlobalFilter? = nil,
+        columnFilter: ColumnFilter? = nil
+    ) {
+        self.init(query: Query(globalFilter: globalFilter, columnFilter: columnFilter))
+    }
+}
+
 public struct SearchCountResponse: Decodable {
     let totalRowCount: Int
 }

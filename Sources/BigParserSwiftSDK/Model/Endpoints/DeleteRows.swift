@@ -11,12 +11,18 @@ public struct DeleteRowsRequest: Encodable {
     let delete: Delete
 
     // MARK: - Update
-    public struct Delete: Encodable {
+    struct Delete: Encodable {
         let rows: [DeleteRow]
     }
 
-    public struct DeleteRow: Encodable {
+    struct DeleteRow: Encodable {
         let rowId: String
+    }
+}
+
+public extension DeleteRowsRequest {
+    init(rowIds: [String]) {
+        self.init(delete: Delete(rows: rowIds.map({ DeleteRow(rowId: $0) })))
     }
 }
 
