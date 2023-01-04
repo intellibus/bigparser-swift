@@ -18,6 +18,11 @@ public struct UpdateRowsRequest: Encodable {
     public struct UpdateRow: Encodable {
         let rowId: String
         let columns: [String: String]
+
+        public init(rowId: String, columns: [String : String]) {
+            self.rowId = rowId
+            self.columns = columns
+        }
     }
 }
 

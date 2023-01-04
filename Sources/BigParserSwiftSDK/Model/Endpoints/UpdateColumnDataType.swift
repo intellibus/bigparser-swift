@@ -14,6 +14,11 @@ public struct UpdateColumnDataTypeRequest: Encodable {
     public struct Column: Encodable {
         let columnName: String
         let dataType: DataType
+
+        public init(columnName: String, dataType: DataType) {
+            self.columnName = columnName
+            self.dataType = dataType
+        }
     }
 
     public init(columns: [Column]) {
