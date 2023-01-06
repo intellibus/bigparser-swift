@@ -10,10 +10,10 @@ import Foundation
 // No request JSON - it's a GET method
 
 public struct GetGridHeaderResponse: Decodable {
-    let name: String
-    let description: String?
-    let columns: [Column]
-    let fileId, fileExtension, fileSource: String?
+    public let name: String
+    public let description: String?
+    public let columns: [Column]
+    public let fileId, fileExtension, fileSource: String?
 
     // MARK: - Columns
     public struct Column: Decodable {

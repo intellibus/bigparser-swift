@@ -20,11 +20,11 @@ public extension LoginRequest {
 }
 
 public struct LoginResponse: Decodable {
-    let authId: String
-    let subscriptionInfo: SubscriptionInfo
-    let userPreference: UserPreference
-    let userStatus: String
-    let userinfo: Userinfo
+    public let authId: String
+    public let subscriptionInfo: SubscriptionInfo
+    public let userPreference: UserPreference
+    public let userStatus: String
+    public let userinfo: Userinfo
 
     // MARK: - SubscriptionInfo
     public struct SubscriptionInfo: Decodable {

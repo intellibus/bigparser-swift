@@ -31,6 +31,6 @@ public extension SearchRequest {
 }
 
 public struct SearchResponse: Decodable {
-    let totalRowCount: Int
-    let rows: [[String]]
+    public let totalRowCount: Int
+    public let rows: [[String]]
 }

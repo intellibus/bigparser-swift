@@ -29,5 +29,5 @@ public extension DeleteRowsByQueryRequest {
 }
 
 public struct DeleteRowsByQueryResponse: Decodable {
-    let noOfRowsDeleted: Int
+    public let noOfRowsDeleted: Int
 }

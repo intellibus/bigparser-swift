@@ -27,5 +27,5 @@ public extension SearchCountRequest {
 }
 
 public struct SearchCountResponse: Decodable {
-    let totalRowCount: Int
+    public let totalRowCount: Int
 }

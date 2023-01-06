@@ -10,7 +10,7 @@ import Foundation
 // No request JSON - it's a GET method
 
 public struct GetMultiSheetMetadataResponse: Decodable {
-    let grids: [Grid]
+    public let grids: [Grid]
 
     // MARK: - Grid
     public struct Grid: Decodable {

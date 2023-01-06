@@ -8,7 +8,7 @@
 import Foundation
 
 public struct Pagination: Codable {
-    let startRow, rowCount: Int
+    public let startRow, rowCount: Int
 
     public init(startRow: Int, rowCount: Int) {
         self.startRow = startRow

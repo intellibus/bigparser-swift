@@ -27,7 +27,7 @@ public extension DeleteRowsRequest {
 }
 
 public struct DeleteRowsResponse: Decodable {
-    let noOfRowsDeleted, noOfRowsFailed: Int
-    let deletedRows: [String]
-    let failedRows: [String: String]
+    public let noOfRowsDeleted, noOfRowsFailed: Int
+    public let deletedRows: [String]
+    public let failedRows: [String: String]
 }

@@ -23,7 +23,7 @@ public extension InsertRowsRequest {
 }
 
 public struct InsertRowsResponse: Decodable {
-    let noOfRowsCreated, noOfRowsFailed: Int
-    let createdRows: [String: String]
-    let failedRows: [String: String]
+    public let noOfRowsCreated, noOfRowsFailed: Int
+    public let createdRows: [String: String]
+    public let failedRows: [String: String]
 }

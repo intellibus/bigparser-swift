@@ -38,5 +38,5 @@ public extension UpdateRowsByQueryRequest {
 }
 
 public struct UpdateRowsByQueryResponse: Decodable {
-    let noOfRowsUpdated: Int
+    public let noOfRowsUpdated: Int
 }

@@ -14,8 +14,8 @@ public enum BigParserRequestError: Error {
 
 
 public struct BigParserErrorResponse: Decodable, Error {
-    let errorMessage: String
-    let errorType: ErrorType
+    public let errorMessage: String
+    public let errorType: ErrorType
 
     // TODO: fill up all the valid types and replace errorType's String type with ErrorType
     public enum ErrorType: String, Decodable {

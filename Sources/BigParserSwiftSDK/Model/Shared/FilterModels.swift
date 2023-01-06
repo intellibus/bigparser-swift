@@ -10,8 +10,8 @@ import Foundation
 
 // MARK: - ColumnFilter
 public struct ColumnFilter: Encodable {
-    let filters: [Filter]
-    let filtersJoinOperator: JoinOperator
+    public let filters: [Filter]
+    public let filtersJoinOperator: JoinOperator
 
     public init(filters: [Filter], filtersJoinOperator: JoinOperator) {
         self.filters = filters
@@ -39,8 +39,8 @@ public struct ColumnFilter: Encodable {
 
 // MARK: - GlobalFilter
 public struct GlobalFilter: Encodable {
-    let filters: [Filter]
-    let filtersJoinOperator: JoinOperator
+    public let filters: [Filter]
+    public let filtersJoinOperator: JoinOperator
 
     public init(filters: [Filter], filtersJoinOperator: JoinOperator) {
         self.filters = filters

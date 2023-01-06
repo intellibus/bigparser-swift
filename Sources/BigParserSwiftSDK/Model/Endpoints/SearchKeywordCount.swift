@@ -27,7 +27,6 @@ public extension SearchKeywordsCountRequest {
 }
 
 public struct SearchKeywordsCountResponse: Decodable {
-    let globalFilterCount: [Int]
-    let columnFilterCount: [Int]
+    public let globalFilterCount: [Int]
+    public let columnFilterCount: [Int]
 }
-
