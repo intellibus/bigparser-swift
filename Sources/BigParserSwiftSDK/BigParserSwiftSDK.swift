@@ -22,10 +22,12 @@ public final class BigParser {
 
     // MARK: - Authentication
 
+    @discardableResult
     public func signUp(_ signUpRequest: SignUpRequest) async throws -> SignUpResponse {
         try await request(baseURLString: Constants.authBaseURLString, method: .POST, path: "common/signup", request: signUpRequest)
     }
 
+    @discardableResult
     public func logIn(_ loginRequest: LoginRequest) async throws -> LoginResponse {
         let response: LoginResponse = try await request(baseURLString: Constants.authBaseURLString, method: .POST, path: "common/login", request: loginRequest)
 
@@ -61,32 +63,39 @@ public final class BigParser {
 
     // MARK: - Write operations
 
+    @discardableResult
     public func createGrid(_ gridId: String, searchRequest: SearchRequest) async throws -> LoginResponse {
         try await request(method: .POST, path: "grid/\(gridId)/search", request: searchRequest)
     }
 
+    @discardableResult
     public func insertRows(_ gridId: String, shareId: String? = nil, insertRowsRequest: InsertRowsRequest) async throws -> InsertRowsResponse {
         try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/rows/create", request: insertRowsRequest)
     }
 
+    @discardableResult
     public func updateRows(_ gridId: String, shareId: String? = nil, updateRowsRequest: UpdateRowsRequest) async throws -> UpdateRowsResponse {
         try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_rowIds", request: updateRowsRequest)
     }
 
+    @discardableResult
     public func updateRows(_ gridId: String, shareId: String? = nil, updateRowsByQueryRequest: UpdateRowsByQueryRequest) async throws -> UpdateRowsByQueryResponse {
         try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_queryObj", request: updateRowsByQueryRequest)
     }
 
+    @discardableResult
     public func updateColumnDataType(_ gridId: String, shareId: String? = nil, updateColumnDataTypeRequest: UpdateColumnDataTypeRequest) async throws -> UpdateColumnDataTypeResponse {
         try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/update_column_datatype", request: updateColumnDataTypeRequest)
     }
 
     // MARK: - Delete operations
 
+    @discardableResult
     public func deleteRows(_ gridId: String, shareId: String? = nil, deleteRows: DeleteRowsRequest) async throws -> DeleteRowsResponse {
         try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_rowIds", request: deleteRows)
     }
 
+    @discardableResult
     public func deleteRows(_ gridId: String, shareId: String? = nil, deleteRowsByQueryRequest: DeleteRowsByQueryRequest) async throws -> DeleteRowsByQueryResponse {
         try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_queryObj", request: deleteRowsByQueryRequest)
     }
@@ -125,8 +134,7 @@ public final class BigParser {
             if let authId = authId {
                 urlRequest.addValue(authId, forHTTPHeaderField: "authId")
             }
-
-            print("curl:\n\(urlRequest.curlString)")
+            unit_test_print("curl:\n\(urlRequest.curlString)")
 
             URLSession.shared.dataTask(
                 with: urlRequest,
@@ -135,7 +143,7 @@ public final class BigParser {
                         continuation.resume(throwing: error)
                     } else {
                         if let data = data {
-                            print("\(String(data: data, encoding: .utf8) ?? "")")
+                            self.unit_test_print("\(String(data: data, encoding: .utf8) ?? "")")
 
                             let errorCode = (response as? HTTPURLResponse)?.statusCode ?? 200
 
@@ -167,5 +175,12 @@ public final class BigParser {
                     }
                 }).resume()
         })
+    }
+
+    private func unit_test_print(_ any: Any...) {
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+             // Code only executes when tests are running
+            print(any)
+        }
     }
 }

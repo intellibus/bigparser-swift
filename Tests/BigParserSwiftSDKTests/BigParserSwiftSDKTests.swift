@@ -7,12 +7,11 @@ final class BigParserSwiftSDKTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Log in")
 
         do {
-            let response = try await BigParser.shared.logIn(LoginRequest(
+            try await BigParser.shared.logIn(LoginRequest(
                 emailId: "tester@unittesting.test",
                 password: "vn0a9n2-svmadd-an8e62e-7cclw2",
                 loggedIn: true)
             )
-            print(response)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
@@ -25,14 +24,13 @@ final class BigParserSwiftSDKTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Sign Up")
 
         do {
-            let response = try await BigParser.shared.signUp(
+            try await BigParser.shared.signUp(
                 SignUpRequest(
                     fullName: "Tester von Testburg",
                     emailId: "tester@unittesting.test",
                     password: "vn0a9n2-svmadd-an8e62e-7cclw2"
                 )
             )
-            print(response)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
