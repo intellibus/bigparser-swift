@@ -16,7 +16,7 @@ public struct SearchRequest: Encodable {
         let columnFilter: ColumnFilter?
         let sort: [String: SortDirection]?
         let pagination: Pagination
-        let showColumnNames: Bool?
+        let showColumnNamesInResponse: Bool?
     }
 }
 
@@ -26,9 +26,9 @@ public extension SearchRequest {
         columnFilter: ColumnFilter? = nil,
         sort: [String: SortDirection]? = nil,
         pagination: Pagination,
-        showColumnNames: Bool? = nil
+        showColumnNamesInResponse: Bool? = nil
     ) {
-        self.init(query: Query(globalFilter: globalFilter, columnFilter: columnFilter, sort: sort, pagination: pagination, showColumnNames: showColumnNames))
+        self.init(query: Query(globalFilter: globalFilter, columnFilter: columnFilter, sort: sort, pagination: pagination, showColumnNamesInResponse: showColumnNamesInResponse))
     }
 }
 

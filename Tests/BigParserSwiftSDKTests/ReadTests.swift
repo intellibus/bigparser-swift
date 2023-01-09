@@ -33,7 +33,7 @@ final class ReadTests: XCTestCase {
             columnFilter: nil,
             sort: nil,
             pagination: Pagination(startRow: 0, rowCount: 100),
-            showColumnNames: true
+            showColumnNamesInResponse: true
         )
 
         do {
