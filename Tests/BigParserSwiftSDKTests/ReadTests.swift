@@ -32,7 +32,8 @@ final class ReadTests: XCTestCase {
                              filtersJoinOperator: .OR),
             columnFilter: nil,
             sort: nil,
-            pagination: Pagination(startRow: 0, rowCount: 100)
+            pagination: Pagination(startRow: 0, rowCount: 100),
+            showColumnNames: true
         )
 
         do {
