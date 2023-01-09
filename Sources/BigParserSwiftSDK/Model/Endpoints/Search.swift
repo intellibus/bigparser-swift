@@ -8,7 +8,7 @@
 import Foundation
 
 public struct SearchRequest: Encodable {
-    let query: Query
+    var query: Query
 
     // MARK: - Query
     struct Query: Encodable {
@@ -16,7 +16,7 @@ public struct SearchRequest: Encodable {
         let columnFilter: ColumnFilter?
         let sort: [String: SortDirection]?
         let pagination: Pagination
-        let showColumnNamesInResponse: Bool?
+        var showColumnNamesInResponse: Bool?
     }
 }
 
@@ -25,14 +25,18 @@ public extension SearchRequest {
         globalFilter: GlobalFilter? = nil,
         columnFilter: ColumnFilter? = nil,
         sort: [String: SortDirection]? = nil,
-        pagination: Pagination,
-        showColumnNamesInResponse: Bool? = nil
+        pagination: Pagination
     ) {
-        self.init(query: Query(globalFilter: globalFilter, columnFilter: columnFilter, sort: sort, pagination: pagination, showColumnNamesInResponse: showColumnNamesInResponse))
+        self.init(query: Query(globalFilter: globalFilter, columnFilter: columnFilter, sort: sort, pagination: pagination, showColumnNamesInResponse: nil))
     }
 }
 
 public struct SearchResponse: Decodable {
     public let totalRowCount: Int
     public let rows: [[String?]]
+}
+
+public struct SearchResponseWithColumnNames: Decodable {
+    public let totalRowCount: Int
+    public let rows: [[String: String?]]
 }

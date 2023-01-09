@@ -45,6 +45,13 @@ public final class BigParser {
         try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: searchRequest)
     }
 
+    public func searchGridWithColumnNames(_ gridId: String, shareId: String? = nil, searchRequest: SearchRequest) async throws -> SearchResponseWithColumnNames {
+        var updatedSearchRequest = searchRequest
+        updatedSearchRequest.query.showColumnNamesInResponse = true
+
+        return try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: updatedSearchRequest)
+    }
+
     public func getGridHeader(_ gridId: String, shareId: String? = nil) async throws -> GetGridHeaderResponse {
         try await request(method: .GET, path: "\(gridPath(gridId, shareId: shareId))/query_metadata")
     }
