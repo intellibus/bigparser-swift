@@ -25,9 +25,36 @@ public extension SearchRequest {
         globalFilter: GlobalFilter? = nil,
         columnFilter: ColumnFilter? = nil,
         sort: [String: SortDirection]? = nil,
-        pagination: Pagination
+        pagination: Pagination = .standardStart
     ) {
         self.init(query: Query(globalFilter: globalFilter, columnFilter: columnFilter, sort: sort, pagination: pagination, showColumnNamesInResponse: nil))
+    }
+
+    init(
+        singleGlobalFilter: GlobalFilter.Filter? = nil,
+        singleColumnFilter: ColumnFilter.Filter? = nil,
+        sort: [String: SortDirection]? = nil,
+        pagination: Pagination = .standardStart
+    ) {
+
+        var globalFilter: GlobalFilter?
+        var columnFilter: ColumnFilter?
+
+        if let singleGlobalFilter = singleGlobalFilter {
+            globalFilter = GlobalFilter(filters: [singleGlobalFilter])
+        }
+        if let singleColumnFilter = singleColumnFilter {
+            columnFilter = ColumnFilter(filters: [singleColumnFilter])
+        }
+
+        self.init(query:
+            Query(
+                globalFilter: globalFilter,
+                columnFilter: columnFilter,
+                sort: sort,
+                pagination: pagination,
+                showColumnNamesInResponse: nil)
+        )
     }
 }
 

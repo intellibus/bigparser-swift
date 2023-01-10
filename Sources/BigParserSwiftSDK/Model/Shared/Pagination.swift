@@ -15,3 +15,8 @@ public struct Pagination: Codable {
         self.rowCount = rowCount
     }
 }
+
+public extension Pagination {
+    static let oneRow = Pagination(startRow: 0, rowCount: 1)
+    static let standardStart = Pagination(startRow: 0, rowCount: 50)
+}

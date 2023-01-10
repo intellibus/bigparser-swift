@@ -13,7 +13,7 @@ public struct ColumnFilter: Encodable {
     public let filters: [Filter]
     public let filtersJoinOperator: JoinOperator
 
-    public init(filters: [Filter], filtersJoinOperator: JoinOperator) {
+    public init(filters: [Filter], filtersJoinOperator: JoinOperator = .OR) {
         self.filters = filters
         self.filtersJoinOperator = filtersJoinOperator
     }
@@ -42,7 +42,7 @@ public struct GlobalFilter: Encodable {
     public let filters: [Filter]
     public let filtersJoinOperator: JoinOperator
 
-    public init(filters: [Filter], filtersJoinOperator: JoinOperator) {
+    public init(filters: [Filter], filtersJoinOperator: JoinOperator = .OR) {
         self.filters = filters
         self.filtersJoinOperator = filtersJoinOperator
     }

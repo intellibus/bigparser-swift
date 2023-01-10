@@ -27,20 +27,14 @@ final class ReadTests: XCTestCase {
     func testSearchGrid() async throws {
         let expectation = XCTestExpectation(description: "Search")
 
-        let query = SearchRequest.Query(
-            globalFilter: GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")],
-                             filtersJoinOperator: .OR),
-            columnFilter: nil,
-            sort: nil,
-            pagination: Pagination(startRow: 0, rowCount: 100),
-            showColumnNamesInResponse: true
-        )
+        let filter = GlobalFilter.Filter(filterOperator: .LIKE, keyword: "Paper")
+        let request = SearchRequest(singleGlobalFilter: filter)
 
         do {
             let _ = try await BigParser.shared.searchGrid(
                 Constants.gridId,
                 shareId: Constants.shareId,
-                searchRequest: SearchRequest(query: query))
+                searchRequest: request)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
