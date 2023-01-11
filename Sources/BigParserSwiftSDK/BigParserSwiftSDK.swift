@@ -11,6 +11,8 @@ public final class BigParser {
 
     public var authId: String?
 
+    // MARK: - Type Definitions
+
     private struct Constants {
         static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
         static let apiBaseURLString: String = "https://qa.BigParser.com/api/v2/"
@@ -184,10 +186,12 @@ public final class BigParser {
         })
     }
 
-    private func unit_test_print(_ any: Any...) {
+    // MARK: - Debugging
+
+    private func unit_test_print(_ items: Any...) {
         if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
              // Code only executes when tests are running
-            print(any)
+            print(items)
         }
     }
 }

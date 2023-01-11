@@ -66,8 +66,7 @@ final class DeleteTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Delete rows by Query")
 
         let rowValue = "Test"
-        let globalFilter = GlobalFilter(filters: [GlobalFilter.Filter(filterOperator: .LIKE, keyword: rowValue)],
-                         filtersJoinOperator: .OR)
+        let globalFilter = GlobalFilter.Filter(filterOperator: .LIKE, keyword: rowValue)
 
         do {
 
@@ -86,13 +85,7 @@ final class DeleteTests: XCTestCase {
             let deleteResponse = try await BigParser.shared.deleteRows(
                 Constants.gridId,
                 deleteRowsByQueryRequest:
-                    DeleteRowsByQueryRequest(delete:
-                        DeleteRowsByQueryRequest.Delete(query:
-                            DeleteRowsByQueryRequest.Query(
-                                columnFilter: nil, globalFilter: globalFilter
-                            )
-                        )
-                    )
+                    DeleteRowsByQueryRequest(singleGlobalFilter: globalFilter)
             )
             XCTAssertTrue(deleteResponse.noOfRowsDeleted == 1)
             expectation.fulfill()

@@ -1,7 +1,7 @@
 import XCTest
 @testable import BigParserSwiftSDK
 
-final class BigParserSwiftSDKTests: XCTestCase {
+final class AuthTests: XCTestCase {
 
     func testLogin() async throws {
         let expectation = XCTestExpectation(description: "Log in")

@@ -133,12 +133,9 @@ final class WriteTests: XCTestCase {
             let _ = try await BigParser.shared.updateRows(
                 Constants.gridId,
                 updateRowsByQueryRequest:
-                    UpdateRowsByQueryRequest(update: UpdateRowsByQueryRequest.Update(
-                        columns: ["Random Number": "\(arc4random() % 100)"]),
-                        query: UpdateRowsByQueryRequest.Query(
-                            columnFilter: nil,
-                            globalFilter: globalFilter
-                        )
+                    UpdateRowsByQueryRequest(
+                        columns: ["Random Number": "\(arc4random() % 100)"],
+                        globalFilter: globalFilter
                     )
             )
             expectation.fulfill()
