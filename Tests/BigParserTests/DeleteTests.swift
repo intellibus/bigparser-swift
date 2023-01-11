@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import BigParserSwiftSDK
+@testable import BigParser
 
 final class DeleteTests: XCTestCase {
 
