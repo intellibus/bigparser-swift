@@ -46,7 +46,6 @@ final class ReadTests: XCTestCase {
     func testGetGridHeader() async throws {
         let expectation = XCTestExpectation(description: "Get grid metadata")
 
-
         do {
             let _ = try await BigParser.shared.getGridHeader(Constants.gridId, shareId: Constants.shareId)
             expectation.fulfill()

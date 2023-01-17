@@ -16,6 +16,7 @@ public final class BigParser {
     private struct Constants {
         static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
         static let apiBaseURLString: String = "https://qa.BigParser.com/api/v2/"
+        static let websocketURLString: String = "wss://qa.bigparser.com/websocket-server/chat/022/jaz5bvqr/websocket"
     }
 
     private enum HTTPMethod: String {
@@ -109,6 +110,16 @@ public final class BigParser {
         try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_queryObj", request: deleteRowsByQueryRequest)
     }
 
+    // MARK: - WebSocket
+    private let stream = WebSocketStream(
+        url: URL(string: Constants.websocketURLString)!,
+        headers: ["Sec-WebSocket-Key": "Z806tr6pbH2UTgPsiq17wg=="])
+
+    // TODO: we have to define the grid as part of the URL...
+    func webSocketStream() -> WebSocketStream {
+        stream
+    }
+
     // MARK: - Convenience
 
     private func gridPath(_ gridId: String, shareId: String? = nil) -> String {
@@ -188,10 +199,10 @@ public final class BigParser {
 
     // MARK: - Debugging
 
-    private func unit_test_print(_ items: Any...) {
+    private func unit_test_print(_ string: String) {
         if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
              // Code only executes when tests are running
-            print(items)
+            print(string)
         }
     }
 }
