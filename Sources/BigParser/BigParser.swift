@@ -89,6 +89,36 @@ public final class BigParser {
     }
 
     @discardableResult
+    public func updateOrInsertRows(_ gridId: String, shareId: String? = nil, updateRowsRequest: UpdateRowsRequest) async throws -> UpdateOrInsertRowsResponse {
+        let updateRowsResponse: UpdateRowsResponse = try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_rowIds", request: updateRowsRequest)
+
+        if updateRowsResponse.noOfRowsFailed == 0 {
+            // Success by update -> just return the response
+            return UpdateOrInsertRowsResponse(updateRowsResponse: updateRowsResponse)
+        }
+
+        // Try inserting rows that didn't succeed
+        let originallyUpdatingRows = updateRowsRequest.plainUpdateRows
+
+        let nonExistingRowIds = updateRowsResponse.failedRows.compactMap({
+            $0.value == .invalidRowId ? $0.key : nil // Select only those failed rows that failed to update because the row ID didn't exist
+        })
+
+        var plainInsertRows = [[String: String]]()
+        nonExistingRowIds.forEach({
+            if let updatingRow = originallyUpdatingRows[$0] {
+                plainInsertRows.append(updatingRow)
+            }
+        })
+
+        // Insert rows that didn't exist before
+        let insertRowsRequest = InsertRowsRequest(rows: plainInsertRows)
+
+        let insertRowsResponse: InsertRowsResponse = try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/rows/create", request: insertRowsRequest)
+        return UpdateOrInsertRowsResponse(updateRowsResponse: updateRowsResponse, insertRowsResponse: insertRowsResponse)
+    }
+
+    @discardableResult
     public func updateRows(_ gridId: String, shareId: String? = nil, updateRowsByQueryRequest: UpdateRowsByQueryRequest) async throws -> UpdateRowsByQueryResponse {
         try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_queryObj", request: updateRowsByQueryRequest)
     }

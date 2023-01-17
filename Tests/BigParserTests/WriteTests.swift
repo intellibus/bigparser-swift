@@ -94,7 +94,7 @@ final class WriteTests: XCTestCase {
     }
 
     func testUpdateTwoRows() async throws {
-        let expectation = XCTestExpectation(description: "Update row")
+        let expectation = XCTestExpectation(description: "Update 2 rows")
 
 
         do {
@@ -121,6 +121,70 @@ final class WriteTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 3)
+    }
+
+    func testUpdateOrInsertTwoRows() async throws {
+        let expectation = XCTestExpectation(description: "Update or insert rows")
+
+        /*
+         1. insert 2 rows (to make sure they exist)
+         2. delete 1 out of these rows
+         3. the other row should still exist, so insert or update should result in one inserted, one updated, no failures
+         */
+        do {
+
+            let deleteRowColumns = ["Random Number": "\(arc4random() % 100)"]
+            let keepRowColumns = ["Random Number": "\(arc4random() % 100)"]
+            let rows = [deleteRowColumns, keepRowColumns]
+
+            // Insert 2 rows (to make sure they exist)
+            let initialInsertResponse = try await BigParser.shared.insertRows(
+                Constants.gridId,
+                insertRowsRequest: InsertRowsRequest(insert: InsertRowsRequest.Insert(rows: rows))
+            )
+
+            XCTAssertTrue(initialInsertResponse.noOfRowsFailed == 0)
+            XCTAssertTrue(initialInsertResponse.noOfRowsCreated == 2)
+            XCTAssertTrue(initialInsertResponse.createdRows.count == 2)
+            guard let deleteRowId = initialInsertResponse.createdRows["0"],
+                  let keepRowId = initialInsertResponse.createdRows["1"] else {
+                XCTFail("Wrong response format of `createdRows`")
+                return
+            }
+
+            // Delete the one again
+            let deleteResponse = try await BigParser.shared.deleteRows(
+                Constants.gridId,
+                deleteRows: DeleteRowsRequest(rowIds: [deleteRowId])
+            )
+
+            XCTAssertTrue(deleteResponse.noOfRowsFailed == 0)
+            XCTAssertTrue(deleteResponse.noOfRowsDeleted == 1)
+            XCTAssertTrue(deleteResponse.deletedRows[0] == deleteRowId)
+
+            // The other row should still exist, so insert or update should result in one inserted, one updated, no failures
+            let updateOrInsertRowsResponse = try await BigParser.shared.updateOrInsertRows(
+                Constants.gridId,
+                updateRowsRequest:
+                    UpdateRowsRequest(rows: [
+                        UpdateRowsRequest.UpdateRow(rowId: deleteRowId, columns: ["Random Number": "\(arc4random() % 100)"]),
+                        UpdateRowsRequest.UpdateRow(rowId: keepRowId, columns: ["Random Number": "\(arc4random() % 100)"])
+                    ])
+            )
+
+
+            XCTAssertTrue(updateOrInsertRowsResponse.noOfRowsFailed == 0)
+            XCTAssertTrue(updateOrInsertRowsResponse.noOfRowsCreated == 1)
+            XCTAssertTrue(updateOrInsertRowsResponse.noOfRowsUpdated == 1)
+            XCTAssertTrue(updateOrInsertRowsResponse.updatedRows[0] == keepRowId)
+            XCTAssertTrue(updateOrInsertRowsResponse.createdRows.first!.value != deleteRowId)
+
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 10)
     }
 
     func testUpdateRowsByQuery() async throws {

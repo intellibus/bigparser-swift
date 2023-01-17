@@ -35,5 +35,5 @@ public extension UpdateRowsRequest {
 public struct UpdateRowsResponse: Decodable {
     public let noOfRowsUpdated, noOfRowsFailed: Int
     public let updatedRows: [String]
-    public let failedRows: [String: String]
+    public let failedRows: [String: FailedRowReason]
 }
