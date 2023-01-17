@@ -71,9 +71,8 @@ final class WriteTests: XCTestCase {
     func testUpdateRow() async throws {
         let expectation = XCTestExpectation(description: "Update row")
 
-
         do {
-            let _ = try await BigParser.shared.updateRows(
+            let _ = try await BigParser.shared.updateOrInsertRows(
                 Constants.gridId,
                 updateRowsRequest: UpdateRowsRequest(update:
                                                         UpdateRowsRequest.Update(rows: [
@@ -98,7 +97,7 @@ final class WriteTests: XCTestCase {
 
 
         do {
-            let _ = try await BigParser.shared.updateRows(
+            let _ = try await BigParser.shared.updateOrInsertRows(
                 Constants.gridId,
                 updateRowsRequest: UpdateRowsRequest(update:
                                                         UpdateRowsRequest.Update(rows: [
@@ -172,12 +171,11 @@ final class WriteTests: XCTestCase {
                     ])
             )
 
-
             XCTAssertTrue(updateOrInsertRowsResponse.noOfRowsFailed == 0)
             XCTAssertTrue(updateOrInsertRowsResponse.noOfRowsCreated == 1)
             XCTAssertTrue(updateOrInsertRowsResponse.noOfRowsUpdated == 1)
             XCTAssertTrue(updateOrInsertRowsResponse.updatedRows[0] == keepRowId)
-            XCTAssertTrue(updateOrInsertRowsResponse.createdRows.first!.value != deleteRowId)
+            XCTAssertTrue(updateOrInsertRowsResponse.createdRows.first == deleteRowId)
 
             expectation.fulfill()
         } catch {
