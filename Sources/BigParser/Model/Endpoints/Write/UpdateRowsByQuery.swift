@@ -40,7 +40,6 @@ public extension UpdateRowsByQueryRequest {
         singleGlobalFilter: GlobalFilter.Filter? = nil,
         singleColumnFilter: ColumnFilter.Filter? = nil
     ) {
-
         var globalFilter: GlobalFilter?
         var columnFilter: ColumnFilter?
 

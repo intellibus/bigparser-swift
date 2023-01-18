@@ -16,7 +16,8 @@ public final class BigParser {
     private struct Constants {
         static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
         static let apiBaseURLString: String = "https://qa.BigParser.com/api/v2/"
-        static let websocketURLString: String = "wss://qa.bigparser.com/websocket-server/chat/022/jaz5bvqr/websocket"
+        static let websocketURLString: String = "https://qa.bigparser.com/websocket-server/chat"
+//        static let websocketURLString: String = "wss://qa.bigparser.com/websocket-server/chat/022/jaz5bvqr/websocket"
     }
 
     private enum HTTPMethod: String {
@@ -74,11 +75,6 @@ public final class BigParser {
     // MARK: - Write operations
 
     @discardableResult
-    public func createGrid(_ gridId: String, searchRequest: SearchRequest) async throws -> LoginResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/search", request: searchRequest)
-    }
-
-    @discardableResult
     public func insertRows(_ gridId: String, shareId: String? = nil, insertRowsRequest: InsertRowsRequest) async throws -> InsertRowsResponse {
         try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/rows/create", request: insertRowsRequest)
     }
@@ -98,6 +94,18 @@ public final class BigParser {
         try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/update_column_datatype", request: updateColumnDataTypeRequest)
     }
 
+    @discardableResult
+    public func addColumn(_ gridId: String, addColumnRequest: AddColumnRequest) async throws -> AddColumnResponse {
+        try await request(method: .POST, path: "grid/\(gridId)/add_column", request: addColumnRequest)
+    }
+
+    @discardableResult
+    public func addColumns(_ gridId: String, addColumnsRequest: AddColumnsRequest) async throws -> [AddColumnsResponse] {
+        try await request(method: .POST, path: "grid/\(gridId)/add_columns", request: addColumnsRequest)
+    }
+
+//    add_column
+
     // MARK: - Delete operations
 
     @discardableResult
@@ -110,14 +118,27 @@ public final class BigParser {
         try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_queryObj", request: deleteRowsByQueryRequest)
     }
 
+    @discardableResult
+    public func removeColumns(_ gridId: String, shareId: String? = nil, removeColumnsRequest: RemoveColumnsRequest) async throws -> RemoveColumnsResponse {
+        try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/remove_columns", request: removeColumnsRequest)
+    }
+
     // MARK: - WebSocket
-    private let stream = WebSocketStream(
-        url: URL(string: Constants.websocketURLString)!,
-        headers: ["Sec-WebSocket-Key": "Z806tr6pbH2UTgPsiq17wg=="])
+    private lazy var stream: WebSocketStream? = {
+        guard let authId = self.authId else {
+            return nil
+        }
+        return WebSocketStream(
+            url: URL(string: Constants.websocketURLString)!,
+            headers: ["Sec-WebSocket-Key": "Z806tr6pbH2UTgPsiq17wg==",
+                      "authId": authId])
+    }()
 
     // TODO: we have to define the grid as part of the URL...
-    func webSocketStream() -> WebSocketStream {
-        stream
+    // var topicToUsed  = "/topic/grid/63c41c96cb59062e0214a28e/share_edit"
+    // var topicToUsed  = "/topic/user/<userid>/grid_updates"  /topic/user/63b30243ce8ca14bd7f81ed6/grid_updates
+    func webSocketStream(gridId: String) -> WebSocketStream {
+        stream!
     }
 
     // MARK: - Convenience
@@ -162,7 +183,15 @@ public final class BigParser {
                     if let error = error {
                         continuation.resume(throwing: error)
                     } else {
-                        if let data = data {
+                        if var data = data {
+                            // Replacing empty response with valid JSON
+                            if (data as NSData).length == 0 {
+                                if Response.self is AnyTypeOfArrayResponse.Type {
+                                    data = "[]".data(using: .utf8)!
+                                } else {
+                                    data = "{}".data(using: .utf8)!
+                                }
+                            }
                             self.unit_test_print("\(String(data: data, encoding: .utf8) ?? "")")
 
                             let errorCode = (response as? HTTPURLResponse)?.statusCode ?? 200
@@ -206,3 +235,8 @@ public final class BigParser {
         }
     }
 }
+
+
+protocol AnyTypeOfArrayResponse { }
+extension Array: AnyTypeOfArrayResponse { }
+extension NSArray: AnyTypeOfArrayResponse { }

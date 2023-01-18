@@ -14,6 +14,7 @@ enum WebsocketMessage {
 
 enum WebsocketActionType: String, Decodable {
     case cellHighlight
+    case bulk_crud
 }
 
 // MARK: - GridWebsocketMessage

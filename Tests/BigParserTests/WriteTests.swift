@@ -10,9 +10,7 @@ import XCTest
 
 final class WriteTests: XCTestCase {
 
-    private struct Constants {
-        static let authId = "fcd0b8a0-5fae-449d-a977-0426915f42a0"
-        static let gridId = "63b3f7f2afe52c4a2373a9ed"
+    private struct WriteConstants {
         static let row0Id = "63b3f902a360a56c50361641"
         static let row1Id = "63b3f902a360a56c50361642"
     }
@@ -31,7 +29,7 @@ final class WriteTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.insertRows(
-                Constants.gridId,
+                Constants.unitTestGridId,
                 insertRowsRequest: InsertRowsRequest(insert:
                                                         InsertRowsRequest.Insert(rows: [
                                                             ["Random Number": "\(arc4random() % 100)"]
@@ -52,7 +50,7 @@ final class WriteTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.insertRows(
-                Constants.gridId,
+                Constants.unitTestGridId,
                 insertRowsRequest: InsertRowsRequest(insert:
                                                         InsertRowsRequest.Insert(rows: [
                                                             ["Random Number": "\(arc4random() % 100)"],
@@ -73,11 +71,11 @@ final class WriteTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.updateOrInsertRows(
-                Constants.gridId,
+                Constants.unitTestGridId,
                 updateRowsRequest: UpdateRowsRequest(update:
                                                         UpdateRowsRequest.Update(rows: [
                                                             UpdateRowsRequest.UpdateRow(
-                                                                rowId: Constants.row0Id,
+                                                                rowId: WriteConstants.row0Id,
                                                                 columns: [
                                                                     "Random Number": "\(arc4random() % 100)"
                                                                 ])
@@ -98,16 +96,16 @@ final class WriteTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.updateOrInsertRows(
-                Constants.gridId,
+                Constants.unitTestGridId,
                 updateRowsRequest: UpdateRowsRequest(update:
                                                         UpdateRowsRequest.Update(rows: [
                                                             UpdateRowsRequest.UpdateRow(
-                                                                rowId: Constants.row0Id,
+                                                                rowId: WriteConstants.row0Id,
                                                                 columns: [
                                                                     "Random Number": "\(arc4random() % 100)"
                                                                 ]),
                                                             UpdateRowsRequest.UpdateRow(
-                                                                rowId: Constants.row1Id,
+                                                                rowId: WriteConstants.row1Id,
                                                                 columns: [
                                                                     "Random Number": "\(arc4random() % 100)"
                                                                 ])
@@ -138,7 +136,7 @@ final class WriteTests: XCTestCase {
 
             // Insert 2 rows (to make sure they exist)
             let initialInsertResponse = try await BigParser.shared.insertRows(
-                Constants.gridId,
+                Constants.unitTestGridId,
                 insertRowsRequest: InsertRowsRequest(insert: InsertRowsRequest.Insert(rows: rows))
             )
 
@@ -153,7 +151,7 @@ final class WriteTests: XCTestCase {
 
             // Delete the one again
             let deleteResponse = try await BigParser.shared.deleteRows(
-                Constants.gridId,
+                Constants.unitTestGridId,
                 deleteRows: DeleteRowsRequest(rowIds: [deleteRowId])
             )
 
@@ -163,7 +161,7 @@ final class WriteTests: XCTestCase {
 
             // The other row should still exist, so insert or update should result in one inserted, one updated, no failures
             let updateOrInsertRowsResponse = try await BigParser.shared.updateOrInsertRows(
-                Constants.gridId,
+                Constants.unitTestGridId,
                 updateRowsRequest:
                     UpdateRowsRequest(rows: [
                         UpdateRowsRequest.UpdateRow(rowId: deleteRowId, columns: ["Random Number": "\(arc4random() % 100)"]),
@@ -193,7 +191,7 @@ final class WriteTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.updateRows(
-                Constants.gridId,
+                Constants.unitTestGridId,
                 updateRowsByQueryRequest:
                     UpdateRowsByQueryRequest(
                         columns: ["Random Number": "\(arc4random() % 100)"],
@@ -208,13 +206,62 @@ final class WriteTests: XCTestCase {
         wait(for: [expectation], timeout: 3)
     }
 
+    func testAddColumn() async throws {
+        let expectation = XCTestExpectation(description: "Update column data type")
+        let newColumnName = "Test Add Single Column"
+
+        do {
+            try await BigParser.shared.addColumn(
+                Constants.unitTestGridId,
+                addColumnRequest: AddColumnRequest(newColumnName: newColumnName)
+            )
+
+            // Delete the column again to clean up
+            try await BigParser.shared.removeColumns(
+                Constants.unitTestGridId,
+                removeColumnsRequest: RemoveColumnsRequest(columnNames: [newColumnName])
+            )
+
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testAddColumns() async throws {
+        let expectation = XCTestExpectation(description: "Update column data type")
+
+        let newColumnNames = ["Identification", "Message", "DebugInfo", "Stack Trace", "File", "Line", "Number Of Times Reported", "App Version", "Last Occurred At", "Last User This Happened To", "Message"]
+
+        do {
+            // Insert the columns
+            try await BigParser.shared.addColumns(
+                Constants.unitTestGridId,
+                addColumnsRequest: AddColumnsRequest(columnNames: newColumnNames))
+
+            // Delete the columns again to clean up
+            try await BigParser.shared.removeColumns(
+                Constants.unitTestGridId,
+                removeColumnsRequest: RemoveColumnsRequest(columnNames: newColumnNames)
+            )
+
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
     func testUpdateColumnDataType() async throws {
         let expectation = XCTestExpectation(description: "Update column data type")
 
 
         do {
             let _ = try await BigParser.shared.updateColumnDataType(
-                Constants.gridId,
+                Constants.unitTestGridId,
                 updateColumnDataTypeRequest:
                     UpdateColumnDataTypeRequest(columns:
                         [

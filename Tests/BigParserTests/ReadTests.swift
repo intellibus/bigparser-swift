@@ -10,8 +10,7 @@ import XCTest
 
 final class ReadTests: XCTestCase {
 
-    private struct Constants {
-        static let authId = "fcd0b8a0-5fae-449d-a977-0426915f42a0"
+    private struct ReadConstants {
         static let gridId = "638f43e7cc3151353d14a63a"
         static let shareId = "638f48d68108ee25ecc3a11a"
     }
@@ -32,8 +31,8 @@ final class ReadTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.searchGrid(
-                Constants.gridId,
-                shareId: Constants.shareId,
+                ReadConstants.gridId,
+                shareId: ReadConstants.shareId,
                 searchRequest: request)
             expectation.fulfill()
         } catch {
@@ -47,7 +46,7 @@ final class ReadTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Get grid metadata")
 
         do {
-            let _ = try await BigParser.shared.getGridHeader(Constants.gridId, shareId: Constants.shareId)
+            let _ = try await BigParser.shared.getGridHeader(ReadConstants.gridId, shareId: ReadConstants.shareId)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
@@ -61,7 +60,7 @@ final class ReadTests: XCTestCase {
 
 
         do {
-            let _ = try await BigParser.shared.getMultiSheetMetadata(Constants.gridId, shareId: Constants.shareId)
+            let _ = try await BigParser.shared.getMultiSheetMetadata(ReadConstants.gridId, shareId: ReadConstants.shareId)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
@@ -81,8 +80,8 @@ final class ReadTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.getSearchCount(
-                Constants.gridId,
-                shareId: Constants.shareId,
+                ReadConstants.gridId,
+                shareId: ReadConstants.shareId,
                 searchCountRequest: SearchCountRequest(query: query))
             expectation.fulfill()
         } catch {
@@ -103,8 +102,8 @@ final class ReadTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.getSearchKeywordsCount(
-                Constants.gridId,
-                shareId: Constants.shareId,
+                ReadConstants.gridId,
+                shareId: ReadConstants.shareId,
                 searchKeywordsCountRequest: SearchKeywordsCountRequest(query: query))
             expectation.fulfill()
         } catch {
