@@ -175,7 +175,7 @@ public final class BigParser {
     private let gridId = "63c7e0c5c1427e424ed42420"
     private var topic: String { "/topic/grid/\(gridId)/share_edit" }
 
-    func connectToWebsocket(topic: String) {
+    public func connectToWebsocket(topic: String) {
         let serverUrl = "https://qa.bigparser.com/websocket-server/chat"
         let authId = "fcd0b8a0-5fae-449d-a977-0426915f42a0"
         let shareId = ""
