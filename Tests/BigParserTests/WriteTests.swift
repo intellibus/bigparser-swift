@@ -28,7 +28,7 @@ final class WriteTests: XCTestCase {
 
 
         do {
-            let _ = try await BigParser.shared.insertRows(
+            try await BigParser.shared.insertRows(
                 Constants.unitTestGridId,
                 request: InsertRowsRequest(insert:
                                                         InsertRowsRequest.Insert(rows: [
@@ -49,7 +49,7 @@ final class WriteTests: XCTestCase {
 
 
         do {
-            let _ = try await BigParser.shared.insertRows(
+            try await BigParser.shared.insertRows(
                 Constants.unitTestGridId,
                 request: InsertRowsRequest(insert:
                                                         InsertRowsRequest.Insert(rows: [
@@ -70,7 +70,7 @@ final class WriteTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Update row")
 
         do {
-            let _ = try await BigParser.shared.updateOrInsertRows(
+            try await BigParser.shared.updateOrInsertRows(
                 Constants.unitTestGridId,
                 request: UpdateRowsRequest(update:
                                                         UpdateRowsRequest.Update(rows: [
@@ -95,7 +95,7 @@ final class WriteTests: XCTestCase {
 
 
         do {
-            let _ = try await BigParser.shared.updateOrInsertRows(
+            try await BigParser.shared.updateOrInsertRows(
                 Constants.unitTestGridId,
                 request: UpdateRowsRequest(update:
                                                         UpdateRowsRequest.Update(rows: [
@@ -190,7 +190,7 @@ final class WriteTests: XCTestCase {
                          filtersJoinOperator: .OR)
 
         do {
-            let _ = try await BigParser.shared.updateRows(
+            try await BigParser.shared.updateRows(
                 Constants.unitTestGridId,
                 request:
                     UpdateRowsByQueryRequest(
@@ -391,7 +391,7 @@ final class WriteTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Update column data type")
 
         do {
-            let _ = try await BigParser.shared.updateColumnDataType(
+            try await BigParser.shared.updateColumnDataType(
                 Constants.unitTestGridId,
                 request:
                     UpdateColumnDataTypeRequest(columns:
@@ -410,4 +410,40 @@ final class WriteTests: XCTestCase {
 
         wait(for: [expectation], timeout: 3)
     }
+
+    func testCreateGrid() async throws {
+        let expectation = XCTestExpectation(description: "Create Grid")
+
+        do {
+            try await BigParser.shared.createGrid(request: CreateGridRequest(gridName: "Test Grid 1"))
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testUpdateTab() async throws {
+        let expectation = XCTestExpectation(description: "Update Tab")
+
+        let parentGridId = "63c9b0fedf96950e4c2a1bde"
+
+        do {
+            // First create a tab
+            let createTabResponse = try await BigParser.shared.createTab(parentGridId, request: CreateTabRequest(tabName: "Update Grid Test"))
+            let newTabGridId = createTabResponse.gridId
+            // Then update the name
+            try await BigParser.shared.updateTab(newTabGridId, request: UpdateTabRequest(tabName: "Updated Grid Name"))
+            // Then delete it
+            try await BigParser.shared.deleteTab(newTabGridId, request: DeleteTabRequest())
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+
 }

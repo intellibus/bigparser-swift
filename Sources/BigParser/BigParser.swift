@@ -75,7 +75,19 @@ public final class BigParser {
 
     @discardableResult
     public func createGrid(request createGridRequest: CreateGridRequest) async throws -> CreateGridResponse {
-        try await request(method: .POST, path: "create_grid", request: createGridRequest)
+        try await request(method: .POST, path: "grid/create_grid", request: createGridRequest)
+    }
+
+    /// The gridId represents the id of the grid which should be a parent to the new tab (which is also represented by a grid)
+    @discardableResult
+    public func createTab(_ gridId: String, request createTabRequest: CreateTabRequest) async throws -> CreateTabResponse {
+        try await request(method: .POST, path: "grid/\(gridId)/create_tab", request: createTabRequest)
+    }
+
+    /// The gridId represents the id of this tab
+    @discardableResult
+    public func updateTab(_ gridId: String, request updateTabRequest: UpdateTabRequest) async throws -> UpdateTabResponse {
+        try await request(method: .POST, path: "grid/\(gridId)/update_tab", request: updateTabRequest)
     }
 
     @discardableResult
@@ -141,6 +153,11 @@ public final class BigParser {
 //    add_column
 
     // MARK: - Delete operations
+
+    @discardableResult
+    public func deleteTab(_ gridId: String, request deleteTabRequest: DeleteTabRequest) async throws -> DeleteTabResponse {
+        try await request(method: .DELETE, path: "grid/\(gridId)/delete_tab", request: deleteTabRequest)
+    }
 
     @discardableResult
     public func deleteRows(_ gridId: String, shareId: String? = nil, request deleteRowsRequest: DeleteRowsRequest) async throws -> DeleteRowsResponse {

@@ -117,4 +117,22 @@ final class DeleteTests: XCTestCase {
         wait(for: [expectation], timeout: 3)
     }
 
+    func testDeleteGrid() async throws {
+        let expectation = XCTestExpectation(description: "Delete Tab")
+
+        let parentGridId = "63c9b0fedf96950e4c2a1bde"
+
+        do {
+            // First create a tab
+            let createTabResponse = try await BigParser.shared.createTab(parentGridId, request: CreateTabRequest(tabName: "Delete Grid Test"))
+            // Then delete it
+            try await BigParser.shared.deleteTab(createTabResponse.gridId, request: DeleteTabRequest())
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
 }
