@@ -207,7 +207,7 @@ final class WriteTests: XCTestCase {
     }
 
     func testAddColumn() async throws {
-        let expectation = XCTestExpectation(description: "Update column data type")
+        let expectation = XCTestExpectation(description: "Add column")
         let newColumnName = "Test Add Single Column"
 
         do {
@@ -231,7 +231,7 @@ final class WriteTests: XCTestCase {
     }
 
     func testAddColumns() async throws {
-        let expectation = XCTestExpectation(description: "Update column data type")
+        let expectation = XCTestExpectation(description: "Add columns")
 
         let newColumnNames = ["Identification", "Message", "DebugInfo", "Stack Trace", "File", "Line", "Number Of Times Reported", "App Version", "Last Occurred At", "Last User This Happened To", "Message"]
 
@@ -255,9 +255,140 @@ final class WriteTests: XCTestCase {
         wait(for: [expectation], timeout: 3)
     }
 
+    func testRenameColumn() async throws {
+        let expectation = XCTestExpectation(description: "Rename Column")
+        let newColumnName = "Test Rename Column"
+        let newColumnUpdatedName = "Test Renamed Column"
+
+        do {
+            // First create a column
+            try await BigParser.shared.addColumn(
+                Constants.unitTestGridId,
+                addColumnRequest: AddColumnRequest(newColumnName: newColumnName)
+            )
+
+            // Then rename it
+            try await BigParser.shared.renameColumns(
+                Constants.unitTestGridId,
+                renameColumnsRequest: RenameColumnsRequest(
+                    columns: [
+                        RenameColumnsRequest.ColumnRename(existingColumnName: newColumnName, newColumnName: newColumnUpdatedName)
+                    ]
+                )
+            )
+
+            // Delete the column again to clean up
+            try await BigParser.shared.removeColumns(
+                Constants.unitTestGridId,
+                removeColumnsRequest: RemoveColumnsRequest(columnNames: [newColumnName])
+            )
+
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testReorderColumn() async throws {
+        let expectation = XCTestExpectation(description: "Reorder Column")
+        let newColumnName = "Test Reorder Column"
+
+        do {
+            // First create a column
+            try await BigParser.shared.addColumn(
+                Constants.unitTestGridId,
+                addColumnRequest: AddColumnRequest(newColumnName: newColumnName)
+            )
+
+            // Then reorder it
+            try await BigParser.shared.reorderColumn(
+                Constants.unitTestGridId,
+                reorderColumnRequest: ReorderColumnRequest(columnName: newColumnName, columnNewIndex: "1")
+            )
+
+            // Delete the column again to clean up
+            try await BigParser.shared.removeColumns(
+                Constants.unitTestGridId,
+                removeColumnsRequest: RemoveColumnsRequest(columnNames: [newColumnName])
+            )
+
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testPinUnpinColumn() async throws {
+        let expectation = XCTestExpectation(description: "Pin Column")
+        let newColumnName = "Test Pin Column"
+
+        do {
+            // First create a column
+            try await BigParser.shared.addColumn(
+                Constants.unitTestGridId,
+                addColumnRequest: AddColumnRequest(newColumnName: newColumnName)
+            )
+
+            // Then pin it to the left
+            try await BigParser.shared.pinColumn(
+                Constants.unitTestGridId,
+                pinColumnRequest: PinColumnRequest(columnName: newColumnName, columnPinType: .left)
+            )
+
+            // And unpin it
+            try await BigParser.shared.unPinColumn(
+                Constants.unitTestGridId,
+                unPinColumnRequest: UnPinColumnRequest(columnName: newColumnName)
+            )
+
+            // Then pin it again to the right
+            try await BigParser.shared.pinColumn(
+                Constants.unitTestGridId,
+                pinColumnRequest: PinColumnRequest(columnName: newColumnName, columnPinType: .right)
+            )
+
+            // And unpin it by unpinning all
+            try await BigParser.shared.unPinAllColumns(
+                Constants.unitTestGridId,
+                unPinAllColumnsRequest: UnPinAllColumnsRequest()
+            )
+
+            // Delete the column again to clean up
+            try await BigParser.shared.removeColumns(
+                Constants.unitTestGridId,
+                removeColumnsRequest: RemoveColumnsRequest(columnNames: [newColumnName])
+            )
+
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 5)
+    }
+
+    func testUpdateColumnDescription() async throws {
+        let expectation = XCTestExpectation(description: "Update column description")
+
+        do {
+            try await BigParser.shared.updateColumnDescription(
+                Constants.unitTestGridId,
+                updateColumnDescriptionRequest: UpdateColumnDescriptionRequest(columnName: "Random Number", columnDesc: "Random description \(arc4random() % 100)")
+            )
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
     func testUpdateColumnDataType() async throws {
         let expectation = XCTestExpectation(description: "Update column data type")
-
 
         do {
             let _ = try await BigParser.shared.updateColumnDataType(

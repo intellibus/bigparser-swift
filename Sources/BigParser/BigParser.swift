@@ -16,7 +16,7 @@ public final class BigParser {
     private struct Constants {
         static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
         static let apiBaseURLString: String = "https://qa.BigParser.com/api/v2/"
-        static let websocketURLString: String = "https://qa.bigparser.com/websocket-server/chat"
+        static let websocketURLString: String = "https://qa.bigparser.com/api/v2/websocket-server/chat"
 //        static let websocketURLString: String = "wss://qa.bigparser.com/websocket-server/chat/022/jaz5bvqr/websocket"
     }
 
@@ -102,6 +102,36 @@ public final class BigParser {
     @discardableResult
     public func addColumns(_ gridId: String, addColumnsRequest: AddColumnsRequest) async throws -> [AddColumnsResponse] {
         try await request(method: .POST, path: "grid/\(gridId)/add_columns", request: addColumnsRequest)
+    }
+
+    @discardableResult
+    public func renameColumns(_ gridId: String, renameColumnsRequest: RenameColumnsRequest) async throws -> RenameColumnsResponse {
+        try await request(method: .POST, path: "grid/\(gridId)/rename_columns", request: renameColumnsRequest)
+    }
+
+    @discardableResult
+    public func reorderColumn(_ gridId: String, reorderColumnRequest: ReorderColumnRequest) async throws -> ReorderColumnResponse {
+        try await request(method: .POST, path: "grid/\(gridId)/reorder_column", request: reorderColumnRequest)
+    }
+
+    @discardableResult
+    public func pinColumn(_ gridId: String, pinColumnRequest: PinColumnRequest) async throws -> PinColumnResponse {
+        try await request(method: .POST, path: "grid/\(gridId)/pin_column", request: pinColumnRequest)
+    }
+
+    @discardableResult
+    public func unPinColumn(_ gridId: String, unPinColumnRequest: UnPinColumnRequest) async throws -> UnPinColumnResponse {
+        try await request(method: .POST, path: "grid/\(gridId)/unpin_column", request: unPinColumnRequest)
+    }
+
+    @discardableResult
+    public func unPinAllColumns(_ gridId: String, unPinAllColumnsRequest: UnPinAllColumnsRequest) async throws -> UnPinAllColumnResponse {
+        try await request(method: .POST, path: "grid/\(gridId)/unpin_all_columns", request: unPinAllColumnsRequest)
+    }
+
+    @discardableResult
+    public func updateColumnDescription(_ gridId: String, updateColumnDescriptionRequest: UpdateColumnDescriptionRequest) async throws -> UpdateColumnDescriptionResponse {
+        try await request(method: .POST, path: "grid/\(gridId)/update_column_desc", request: updateColumnDescriptionRequest)
     }
 
 //    add_column
