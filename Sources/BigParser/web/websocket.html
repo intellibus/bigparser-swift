@@ -1,0 +1,38 @@
+
+<script src="./websocket-server/sockjs.min.js"></script>
+<script src="./websocket-server/stomp.min.js"></script>
+
+<script type="text/javascript">
+
+    var stompClient = null;
+
+    function connect(url, authId, topic, subscribeHeaders) {
+        var socket = new SockJS(url);
+        console.log(socket);
+        this.stompClient = Stomp.over(socket);
+        stompClient.connect({
+            "authId": authId
+        }, function(frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe(topic,
+                // Callback
+                function(serverMessage) {
+                    console.log('message: ' + serverMessage);
+                },
+                // Headers
+                subscribeHeaders);
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+        }
+        console.log("Disconnected");
+    }
+
+    function send(topic, headers, body) {
+        stompClient.send(topic, headers, body);
+    }
+</script>
+<!--<div> SockJS </div>-->

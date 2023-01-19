@@ -16,8 +16,7 @@ public final class BigParser {
     private struct Constants {
         static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
         static let apiBaseURLString: String = "https://qa.BigParser.com/api/v2/"
-        static let websocketURLString: String = "https://qa.bigparser.com/api/v2/websocket-server/chat"
-//        static let websocketURLString: String = "wss://qa.bigparser.com/websocket-server/chat/022/jaz5bvqr/websocket"
+        static let websocketURLString: String = "https://qa.bigparser.com/websocket-server/chat"
     }
 
     private enum HTTPMethod: String {
@@ -155,6 +154,7 @@ public final class BigParser {
 
     // MARK: - WebSocket
     private lazy var stream: WebSocketStream? = {
+        
         guard let authId = self.authId else {
             return nil
         }
@@ -169,6 +169,24 @@ public final class BigParser {
     // var topicToUsed  = "/topic/user/<userid>/grid_updates"  /topic/user/63b30243ce8ca14bd7f81ed6/grid_updates
     func webSocketStream(gridId: String) -> WebSocketStream {
         stream!
+    }
+
+    private var sockJS: BigParserSockJS?
+    private let gridId = "63c7e0c5c1427e424ed42420"
+    private var topic: String { "/topic/grid/\(gridId)/share_edit" }
+
+    func connectToWebsocket(topic: String) {
+        let serverUrl = "https://qa.bigparser.com/websocket-server/chat"
+        let authId = "fcd0b8a0-5fae-449d-a977-0426915f42a0"
+        let shareId = ""
+
+        let subscribeHeaders = [
+            "authId": authId,
+            "gridId": gridId,
+            "shareId": shareId
+          ]
+
+        sockJS = BigParserSockJS(serverUrl: serverUrl, authId: authId, topic: topic, subscribeHeaders: subscribeHeaders)
     }
 
     // MARK: - Convenience
