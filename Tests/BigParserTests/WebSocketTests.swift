@@ -27,7 +27,9 @@ final class WebSocketTests: XCTestCase {
                     gridId: Constants.unitTestGridId
                 ) {
                     switch message {
-                    case .grid(let message):
+                    case .cellHighlight(let message):
+                        print(message)
+                    case .bulkCRUD(let message):
                         print(message)
                     case .string(let string):
                         print(string)

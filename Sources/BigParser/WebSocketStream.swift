@@ -52,19 +52,3 @@ final public class WebSocketStompStream: AsyncSequence {
         continuation.yield(websocketMessage)
     }
 }
-
-extension WebsocketMessage {
-    init?(data: Data) throws {
-        // Decode known types
-        let decoder = JSONDecoder()
-        if let message = try? decoder.decode(GridWebsocketMessage.self, from: data) {
-            self = .grid(message)
-        } else
-        // Return just string
-        if let string = String(data: data, encoding: .utf8) {
-            self = .string(string)
-        } else {
-            return nil
-        }
-    }
-}
