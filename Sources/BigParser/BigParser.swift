@@ -153,40 +153,20 @@ public final class BigParser {
     }
 
     // MARK: - WebSocket
-    private lazy var stream: WebSocketStream? = {
-        
-        guard let authId = self.authId else {
-            return nil
+
+    public func streamGridUpdates(gridId: String, shareId: String = "") throws -> WebSocketStompStream {
+        guard let authId = authId else {
+            throw NSError(domain: "Unauthorized", code: 403)
         }
-        return WebSocketStream(
-            url: URL(string: Constants.websocketURLString)!,
-            headers: ["Sec-WebSocket-Key": "Z806tr6pbH2UTgPsiq17wg==",
-                      "authId": authId])
-    }()
-
-    // TODO: we have to define the grid as part of the URL...
-    // var topicToUsed  = "/topic/grid/63c41c96cb59062e0214a28e/share_edit"
-    // var topicToUsed  = "/topic/user/<userid>/grid_updates"  /topic/user/63b30243ce8ca14bd7f81ed6/grid_updates
-    func webSocketStream(gridId: String) -> WebSocketStream {
-        stream!
-    }
-
-    private var sockJS: BigParserSockJS?
-    private let gridId = "63c7e0c5c1427e424ed42420"
-    private var topic: String { "/topic/grid/\(gridId)/share_edit" }
-
-    public func connectToWebsocket(topic: String) {
-        let serverUrl = "https://qa.bigparser.com/websocket-server/chat"
-        let authId = "fcd0b8a0-5fae-449d-a977-0426915f42a0"
-        let shareId = ""
+        let topic = "/topic/grid/\(gridId)/share_edit"
 
         let subscribeHeaders = [
             "authId": authId,
             "gridId": gridId,
             "shareId": shareId
-          ]
-
-        sockJS = BigParserSockJS(serverUrl: serverUrl, authId: authId, topic: topic, subscribeHeaders: subscribeHeaders)
+        ]
+        let url = Constants.websocketURLString
+        return WebSocketStompStream(url: url, authId: authId, topic: topic, subscribeHeaders: subscribeHeaders)
     }
 
     // MARK: - Convenience

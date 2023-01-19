@@ -1,5 +1,5 @@
 //
-//  BigParserSockJS.swift
+//  StompSockJS.swift
 //  
 //
 //  Created by Miroslav Kutak on 01/19/2023.
@@ -8,13 +8,15 @@
 import Foundation
 import WebKit
 
-class BigParserSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, WKUIDelegate {
+class StompSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, WKUIDelegate {
 
     let serverUrl: String
     let authId: String
 
     let topic: String
     let subscribeHeaders: [String: String]
+
+    var onMessage: ((_ data: Data) -> Void)?
 
     init(serverUrl: String, authId: String, topic: String, subscribeHeaders: [String: String]) {
         self.serverUrl = serverUrl
@@ -54,19 +56,20 @@ class BigParserSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, W
     }
 
     func handleIncoming(data: Data) {
-        do {
-            let object = try JSONSerialization.jsonObject(with: data)
-            print(object)
-        } catch {
-            print(error)
-        }
+//        do {
+//            let object = try JSONSerialization.jsonObject(with: data)
+//            print(object)
+//        } catch {
+//            print(error)
+//        }
+        onMessage?(data)
     }
 
     // MARK: - WKScriptMessageHandler
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "logHandler" {
-            print("LOG:\n\(message.body)")
+//            print("LOG:\n\(message.body)")
             if let messageBody = message.body as? String,
                messageBody.hasPrefix("message: MESSAGE") {
                 let parts = messageBody.components(separatedBy: "\n{")
@@ -120,9 +123,7 @@ class BigParserSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, W
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if webViewLoaded == false {
 
-            Task {
-                try connect()
-            }
+            try? connect()
             webViewLoaded = true
         }
     }
@@ -145,6 +146,10 @@ class BigParserSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, W
             }
             decisionHandler(.allow)
         }
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print(error)
     }
 
     // MARK: - WKUIDelegate

@@ -7,30 +7,30 @@
 
 import Foundation
 
-enum WebsocketMessage {
+public enum WebsocketMessage {
     case grid(GridWebsocketMessage)
     case string(String)
 }
 
-enum WebsocketActionType: String, Decodable {
+public enum WebsocketActionType: String, Decodable {
     case cellHighlight
     case bulk_crud
 }
 
 // MARK: - GridWebsocketMessage
-struct GridWebsocketMessage: Decodable {
-    let topic, gridId, msgSender: String
-    let actionType: WebsocketActionType
-    let userInfo: UserInfo
-    let cursorPosition: CursorPosition
+public struct GridWebsocketMessage: Decodable {
+    public let topic, gridId, msgSender: String
+    public let actionType: WebsocketActionType
+    public let userInfo: UserInfo
+    public let cursorPosition: CursorPosition
 }
 
 // MARK: - CursorPosition
-struct CursorPosition: Decodable {
-    let rowIndex, columnName, columnIndex: String
+public struct CursorPosition: Decodable {
+    public let rowIndex, columnName, columnIndex: String
 }
 
 // MARK: - UserInfo
-struct UserInfo: Decodable {
-    let userId, userEmail, userName: String
+public struct UserInfo: Decodable {
+    public let userId, userEmail, userName: String
 }
