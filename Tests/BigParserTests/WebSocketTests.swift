@@ -24,7 +24,7 @@ final class WebSocketTests: XCTestCase {
         Task {
             do {
                 for try await message in try BigParser.shared.streamGridUpdates(
-                    gridId: Constants.unitTestGridId
+                    Constants.unitTestGridId
                 ) {
                     switch message {
                     case .cellHighlight(let message):

@@ -8,9 +8,9 @@
 import Foundation
 
 public struct RemoveColumnsRequest: Encodable {
-    public let columns: [Column]
+    let columns: [Column]
 
-    public struct Column: Encodable {
+    struct Column: Encodable {
         public let columnName: String
     }
 }

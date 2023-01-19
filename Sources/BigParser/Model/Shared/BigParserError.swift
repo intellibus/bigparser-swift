@@ -10,6 +10,7 @@ import Foundation
 public enum BigParserRequestError: Error {
     case emptyResponse
     case unknownError
+    case unauthorized
 }
 
 

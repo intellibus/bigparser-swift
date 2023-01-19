@@ -33,7 +33,7 @@ final class ReadTests: XCTestCase {
             let _ = try await BigParser.shared.searchGrid(
                 ReadConstants.gridId,
                 shareId: ReadConstants.shareId,
-                searchRequest: request)
+                request: request)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
@@ -82,7 +82,7 @@ final class ReadTests: XCTestCase {
             let _ = try await BigParser.shared.getSearchCount(
                 ReadConstants.gridId,
                 shareId: ReadConstants.shareId,
-                searchCountRequest: SearchCountRequest(query: query))
+                request: SearchCountRequest(query: query))
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
@@ -104,7 +104,7 @@ final class ReadTests: XCTestCase {
             let _ = try await BigParser.shared.getSearchKeywordsCount(
                 ReadConstants.gridId,
                 shareId: ReadConstants.shareId,
-                searchKeywordsCountRequest: SearchKeywordsCountRequest(query: query))
+                request: SearchKeywordsCountRequest(query: query))
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")

@@ -30,7 +30,7 @@ final class WriteTests: XCTestCase {
         do {
             let _ = try await BigParser.shared.insertRows(
                 Constants.unitTestGridId,
-                insertRowsRequest: InsertRowsRequest(insert:
+                request: InsertRowsRequest(insert:
                                                         InsertRowsRequest.Insert(rows: [
                                                             ["Random Number": "\(arc4random() % 100)"]
                                                         ])
@@ -51,7 +51,7 @@ final class WriteTests: XCTestCase {
         do {
             let _ = try await BigParser.shared.insertRows(
                 Constants.unitTestGridId,
-                insertRowsRequest: InsertRowsRequest(insert:
+                request: InsertRowsRequest(insert:
                                                         InsertRowsRequest.Insert(rows: [
                                                             ["Random Number": "\(arc4random() % 100)"],
                                                             ["Random Number": "\(arc4random() % 100)"]
@@ -72,7 +72,7 @@ final class WriteTests: XCTestCase {
         do {
             let _ = try await BigParser.shared.updateOrInsertRows(
                 Constants.unitTestGridId,
-                updateRowsRequest: UpdateRowsRequest(update:
+                request: UpdateRowsRequest(update:
                                                         UpdateRowsRequest.Update(rows: [
                                                             UpdateRowsRequest.UpdateRow(
                                                                 rowId: WriteConstants.row0Id,
@@ -97,7 +97,7 @@ final class WriteTests: XCTestCase {
         do {
             let _ = try await BigParser.shared.updateOrInsertRows(
                 Constants.unitTestGridId,
-                updateRowsRequest: UpdateRowsRequest(update:
+                request: UpdateRowsRequest(update:
                                                         UpdateRowsRequest.Update(rows: [
                                                             UpdateRowsRequest.UpdateRow(
                                                                 rowId: WriteConstants.row0Id,
@@ -137,7 +137,7 @@ final class WriteTests: XCTestCase {
             // Insert 2 rows (to make sure they exist)
             let initialInsertResponse = try await BigParser.shared.insertRows(
                 Constants.unitTestGridId,
-                insertRowsRequest: InsertRowsRequest(insert: InsertRowsRequest.Insert(rows: rows))
+                request: InsertRowsRequest(insert: InsertRowsRequest.Insert(rows: rows))
             )
 
             XCTAssertTrue(initialInsertResponse.noOfRowsFailed == 0)
@@ -152,7 +152,7 @@ final class WriteTests: XCTestCase {
             // Delete the one again
             let deleteResponse = try await BigParser.shared.deleteRows(
                 Constants.unitTestGridId,
-                deleteRows: DeleteRowsRequest(rowIds: [deleteRowId])
+                request: DeleteRowsRequest(rowIds: [deleteRowId])
             )
 
             XCTAssertTrue(deleteResponse.noOfRowsFailed == 0)
@@ -162,7 +162,7 @@ final class WriteTests: XCTestCase {
             // The other row should still exist, so insert or update should result in one inserted, one updated, no failures
             let updateOrInsertRowsResponse = try await BigParser.shared.updateOrInsertRows(
                 Constants.unitTestGridId,
-                updateRowsRequest:
+                request:
                     UpdateRowsRequest(rows: [
                         UpdateRowsRequest.UpdateRow(rowId: deleteRowId, columns: ["Random Number": "\(arc4random() % 100)"]),
                         UpdateRowsRequest.UpdateRow(rowId: keepRowId, columns: ["Random Number": "\(arc4random() % 100)"])
@@ -192,7 +192,7 @@ final class WriteTests: XCTestCase {
         do {
             let _ = try await BigParser.shared.updateRows(
                 Constants.unitTestGridId,
-                updateRowsByQueryRequest:
+                request:
                     UpdateRowsByQueryRequest(
                         columns: ["Random Number": "\(arc4random() % 100)"],
                         globalFilter: globalFilter
@@ -213,13 +213,13 @@ final class WriteTests: XCTestCase {
         do {
             try await BigParser.shared.addColumn(
                 Constants.unitTestGridId,
-                addColumnRequest: AddColumnRequest(newColumnName: newColumnName)
+                request: AddColumnRequest(newColumnName: newColumnName)
             )
 
             // Delete the column again to clean up
             try await BigParser.shared.removeColumns(
                 Constants.unitTestGridId,
-                removeColumnsRequest: RemoveColumnsRequest(columnNames: [newColumnName])
+                request: RemoveColumnsRequest(columnNames: [newColumnName])
             )
 
             expectation.fulfill()
@@ -239,12 +239,12 @@ final class WriteTests: XCTestCase {
             // Insert the columns
             try await BigParser.shared.addColumns(
                 Constants.unitTestGridId,
-                addColumnsRequest: AddColumnsRequest(columnNames: newColumnNames))
+                request: AddColumnsRequest(columnNames: newColumnNames))
 
             // Delete the columns again to clean up
             try await BigParser.shared.removeColumns(
                 Constants.unitTestGridId,
-                removeColumnsRequest: RemoveColumnsRequest(columnNames: newColumnNames)
+                request: RemoveColumnsRequest(columnNames: newColumnNames)
             )
 
             expectation.fulfill()
@@ -264,13 +264,13 @@ final class WriteTests: XCTestCase {
             // First create a column
             try await BigParser.shared.addColumn(
                 Constants.unitTestGridId,
-                addColumnRequest: AddColumnRequest(newColumnName: newColumnName)
+                request: AddColumnRequest(newColumnName: newColumnName)
             )
 
             // Then rename it
             try await BigParser.shared.renameColumns(
                 Constants.unitTestGridId,
-                renameColumnsRequest: RenameColumnsRequest(
+                request: RenameColumnsRequest(
                     columns: [
                         RenameColumnsRequest.ColumnRename(existingColumnName: newColumnName, newColumnName: newColumnUpdatedName)
                     ]
@@ -280,7 +280,7 @@ final class WriteTests: XCTestCase {
             // Delete the column again to clean up
             try await BigParser.shared.removeColumns(
                 Constants.unitTestGridId,
-                removeColumnsRequest: RemoveColumnsRequest(columnNames: [newColumnName])
+                request: RemoveColumnsRequest(columnNames: [newColumnName])
             )
 
             expectation.fulfill()
@@ -299,19 +299,19 @@ final class WriteTests: XCTestCase {
             // First create a column
             try await BigParser.shared.addColumn(
                 Constants.unitTestGridId,
-                addColumnRequest: AddColumnRequest(newColumnName: newColumnName)
+                request: AddColumnRequest(newColumnName: newColumnName)
             )
 
             // Then reorder it
             try await BigParser.shared.reorderColumn(
                 Constants.unitTestGridId,
-                reorderColumnRequest: ReorderColumnRequest(columnName: newColumnName, columnNewIndex: "1")
+                request: ReorderColumnRequest(columnName: newColumnName, columnNewIndex: "1")
             )
 
             // Delete the column again to clean up
             try await BigParser.shared.removeColumns(
                 Constants.unitTestGridId,
-                removeColumnsRequest: RemoveColumnsRequest(columnNames: [newColumnName])
+                request: RemoveColumnsRequest(columnNames: [newColumnName])
             )
 
             expectation.fulfill()
@@ -330,37 +330,37 @@ final class WriteTests: XCTestCase {
             // First create a column
             try await BigParser.shared.addColumn(
                 Constants.unitTestGridId,
-                addColumnRequest: AddColumnRequest(newColumnName: newColumnName)
+                request: AddColumnRequest(newColumnName: newColumnName)
             )
 
             // Then pin it to the left
             try await BigParser.shared.pinColumn(
                 Constants.unitTestGridId,
-                pinColumnRequest: PinColumnRequest(columnName: newColumnName, columnPinType: .left)
+                request: PinColumnRequest(columnName: newColumnName, columnPinType: .left)
             )
 
             // And unpin it
             try await BigParser.shared.unPinColumn(
                 Constants.unitTestGridId,
-                unPinColumnRequest: UnPinColumnRequest(columnName: newColumnName)
+                request: UnPinColumnRequest(columnName: newColumnName)
             )
 
             // Then pin it again to the right
             try await BigParser.shared.pinColumn(
                 Constants.unitTestGridId,
-                pinColumnRequest: PinColumnRequest(columnName: newColumnName, columnPinType: .right)
+                request: PinColumnRequest(columnName: newColumnName, columnPinType: .right)
             )
 
             // And unpin it by unpinning all
             try await BigParser.shared.unPinAllColumns(
                 Constants.unitTestGridId,
-                unPinAllColumnsRequest: UnPinAllColumnsRequest()
+                request: UnPinAllColumnsRequest()
             )
 
             // Delete the column again to clean up
             try await BigParser.shared.removeColumns(
                 Constants.unitTestGridId,
-                removeColumnsRequest: RemoveColumnsRequest(columnNames: [newColumnName])
+                request: RemoveColumnsRequest(columnNames: [newColumnName])
             )
 
             expectation.fulfill()
@@ -377,7 +377,7 @@ final class WriteTests: XCTestCase {
         do {
             try await BigParser.shared.updateColumnDescription(
                 Constants.unitTestGridId,
-                updateColumnDescriptionRequest: UpdateColumnDescriptionRequest(columnName: "Random Number", columnDesc: "Random description \(arc4random() % 100)")
+                request: UpdateColumnDescriptionRequest(columnName: "Random Number", columnDesc: "Random description \(arc4random() % 100)")
             )
             expectation.fulfill()
         } catch {
@@ -393,7 +393,7 @@ final class WriteTests: XCTestCase {
         do {
             let _ = try await BigParser.shared.updateColumnDataType(
                 Constants.unitTestGridId,
-                updateColumnDataTypeRequest:
+                request:
                     UpdateColumnDataTypeRequest(columns:
                         [
                             UpdateColumnDataTypeRequest.Column (
