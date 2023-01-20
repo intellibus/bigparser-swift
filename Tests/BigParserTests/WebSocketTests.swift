@@ -18,7 +18,7 @@ final class WebSocketTests: XCTestCase {
         BigParser.shared.authId = nil
     }
 
-    func testJS() throws {
+    func testJSGridUpdates() throws {
         let expectation = XCTestExpectation(description: "Connect grid websocket")
 
         Task {
@@ -28,11 +28,11 @@ final class WebSocketTests: XCTestCase {
                 ) {
                     switch message {
                     case .cellHighlight(let message):
-                        print(message)
+                        Console.log(message)
                     case .bulkCRUD(let message):
-                        print(message)
+                        Console.log(message)
                     case .string(let string):
-                        print(string)
+                        Console.log(string)
                     }
                 }
             } catch {
@@ -40,7 +40,32 @@ final class WebSocketTests: XCTestCase {
             }
         }
 
-        wait(for: [expectation], timeout: 3)
+        wait(for: [expectation], timeout: 300)
+    }
+
+    func testJSGridListUpdates() throws {
+        let expectation = XCTestExpectation(description: "Connect grid list websocket")
+
+        Task {
+            do {
+                for try await message in try BigParser.shared.streamGridListUpdates(
+                    Constants.userId
+                ) {
+                    switch message {
+                    case .cellHighlight(let message):
+                        Console.log(message)
+                    case .bulkCRUD(let message):
+                        Console.log(message)
+                    case .string(let string):
+                        Console.log(string)
+                    }
+                }
+            } catch {
+                XCTFail("\(error)")
+            }
+        }
+
+        wait(for: [expectation], timeout: 300)
     }
 
 }

@@ -56,12 +56,6 @@ class StompSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, WKUID
     }
 
     func handleIncoming(data: Data) {
-//        do {
-//            let object = try JSONSerialization.jsonObject(with: data)
-//            print(object)
-//        } catch {
-//            print(error)
-//        }
         onMessage?(data)
     }
 
@@ -69,7 +63,7 @@ class StompSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, WKUID
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "logHandler" {
-//            print("LOG:\n\(message.body)")
+            Console.log("LOG:\n\(message.body)")
             if let messageBody = message.body as? String,
                messageBody.hasPrefix("message: MESSAGE") {
                 let parts = messageBody.components(separatedBy: "\n{")
@@ -109,10 +103,10 @@ class StompSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, WKUID
         DispatchQueue.main.async {
             self.webView.evaluateJavaScript(javascriptString, completionHandler: { (result, error) in
                 if let error = error {
-                    print(error)
+                    Console.log(error)
                 }
                 if let result = result {
-                    print(result)
+                    Console.log(result)
                 }
             })
         }
@@ -140,7 +134,7 @@ class StompSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, WKUID
                         let temp = String(param1!.value!)
                         if let data = temp.data(using: String.Encoding.utf8) {
                             //let json = JSON(data: data)
-                            print("Live Data: \(data.debugDescription)")
+                            Console.log("Live Data: \(data.debugDescription)")
                         }
                 }
             }
@@ -149,7 +143,7 @@ class StompSockJS: NSObject, WKScriptMessageHandler, WKNavigationDelegate, WKUID
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print(error)
+        Console.log(error)
     }
 
     // MARK: - WKUIDelegate

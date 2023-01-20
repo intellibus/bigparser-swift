@@ -16,7 +16,7 @@ public final class BigParser {
     private struct Constants {
         static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
         static let apiBaseURLString: String = "https://qa.BigParser.com/api/v2/"
-        static let websocketURLString: String = "https://qa.bigparser.com/websocket-server/chat"
+        static let websocketURLString: String = "https://qa.bigparser.com/websocket-server/chat/"
     }
 
     private enum HTTPMethod: String {
@@ -150,8 +150,6 @@ public final class BigParser {
         try await request(method: .POST, path: "grid/\(gridId)/update_column_desc", request: updateColumnDescriptionRequest)
     }
 
-//    add_column
-
     // MARK: - Delete operations
 
     @discardableResult
@@ -176,16 +174,30 @@ public final class BigParser {
 
     // MARK: - WebSocket
 
-    public func streamGridUpdates(_ gridId: String, shareId: String = "") throws -> WebSocketStompStream {
+    public func streamGridUpdates(_ gridId: String, shareId: String? = nil) throws -> WebSocketStompStream {
         guard let authId = authId else {
             throw BigParserRequestError.unauthorized
         }
-        let topic = "/topic/grid/\(gridId)/share_edit"
+        let topic = "topic/grid/\(gridId)/share_edit"
+
+        var subscribeHeaders = [
+            "authId": authId,
+            "gridId": gridId
+        ]
+        subscribeHeaders["shareId"] = shareId // Optional
+
+        let url = Constants.websocketURLString
+        return WebSocketStompStream(url: url, authId: authId, topic: topic, subscribeHeaders: subscribeHeaders)
+    }
+
+    public func streamGridListUpdates(_ userId: String) throws -> WebSocketStompStream {
+        guard let authId = authId else {
+            throw BigParserRequestError.unauthorized
+        }
+        let topic = "topic/user/\(userId)/grid_updates"
 
         let subscribeHeaders = [
-            "authId": authId,
-            "gridId": gridId,
-            "shareId": shareId
+            "authId": authId
         ]
         let url = Constants.websocketURLString
         return WebSocketStompStream(url: url, authId: authId, topic: topic, subscribeHeaders: subscribeHeaders)
@@ -225,7 +237,7 @@ public final class BigParser {
             if let authId = authId {
                 urlRequest.addValue(authId, forHTTPHeaderField: "authId")
             }
-            unit_test_print("curl:\n\(urlRequest.curlString)")
+            Console.log("curl:\n\(urlRequest.curlString)")
 
             URLSession.shared.dataTask(
                 with: urlRequest,
@@ -242,7 +254,7 @@ public final class BigParser {
                                     data = "{}".data(using: .utf8)!
                                 }
                             }
-                            self.unit_test_print("\(String(data: data, encoding: .utf8) ?? "")")
+                            Console.log("\(String(data: data, encoding: .utf8) ?? "")")
 
                             let errorCode = (response as? HTTPURLResponse)?.statusCode ?? 200
 
@@ -274,15 +286,6 @@ public final class BigParser {
                     }
                 }).resume()
         })
-    }
-
-    // MARK: - Debugging
-
-    private func unit_test_print(_ string: String) {
-        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
-             // Code only executes when tests are running
-            print(string)
-        }
     }
 }
 

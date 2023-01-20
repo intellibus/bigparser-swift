@@ -33,7 +33,9 @@ public extension WebsocketMessage {
 }
 
 
-public enum WebsocketActionType: String, Decodable {
+public enum WebsocketActionType: String, Codable {
     case cellHighlight
     case bulk_crud
+    case leaveGrid
+    case openGrid
 }
