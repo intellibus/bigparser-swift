@@ -44,11 +44,14 @@ final public class WebSocketStompStream: AsyncSequence {
     }
 
     private func listenForMessages(_ data: Data) {
-        guard let websocketMessage = try? WebsocketMessage(data: data),
-              let continuation = continuation else {
+        guard let continuation = continuation else {
             return
         }
-
-        continuation.yield(websocketMessage)
+        do {
+            let websocketMessage = try WebsocketMessage(data: data)
+            continuation.yield(websocketMessage)
+        } catch {
+            Console.log(error)
+        }
     }
 }

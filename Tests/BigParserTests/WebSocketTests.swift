@@ -26,14 +26,7 @@ final class WebSocketTests: XCTestCase {
                 for try await message in try BigParser.shared.streamGridUpdates(
                     Constants.unitTestGridId
                 ) {
-                    switch message {
-                    case .cellHighlight(let message):
-                        Console.log(message)
-                    case .bulkCRUD(let message):
-                        Console.log(message)
-                    case .string(let string):
-                        Console.log(string)
-                    }
+                    Console.log(message)
                 }
             } catch {
                 XCTFail("\(error)")
@@ -51,14 +44,7 @@ final class WebSocketTests: XCTestCase {
                 for try await message in try BigParser.shared.streamGridListUpdates(
                     Constants.userId
                 ) {
-                    switch message {
-                    case .cellHighlight(let message):
-                        Console.log(message)
-                    case .bulkCRUD(let message):
-                        Console.log(message)
-                    case .string(let string):
-                        Console.log(string)
-                    }
+                    Console.log(message)
                 }
             } catch {
                 XCTFail("\(error)")

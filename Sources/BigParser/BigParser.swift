@@ -16,7 +16,7 @@ public final class BigParser {
     private struct Constants {
         static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
         static let apiBaseURLString: String = "https://qa.BigParser.com/api/v2/"
-        static let websocketURLString: String = "https://qa.bigparser.com/websocket-server/chat/"
+        static let websocketURLString: String = "https://qa.bigparser.com/websocket-server/chat" // Must be without the forward slash at the end
     }
 
     private enum HTTPMethod: String {
@@ -178,7 +178,7 @@ public final class BigParser {
         guard let authId = authId else {
             throw BigParserRequestError.unauthorized
         }
-        let topic = "topic/grid/\(gridId)/share_edit"
+        let topic = "/topic/grid/\(gridId)/share_edit" // Must start with forward slash
 
         var subscribeHeaders = [
             "authId": authId,
@@ -194,7 +194,7 @@ public final class BigParser {
         guard let authId = authId else {
             throw BigParserRequestError.unauthorized
         }
-        let topic = "topic/user/\(userId)/grid_updates"
+        let topic = "/topic/user/\(userId)/grid_updates" // Must start with forward slash
 
         let subscribeHeaders = [
             "authId": authId

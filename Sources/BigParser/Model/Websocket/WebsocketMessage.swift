@@ -7,35 +7,64 @@
 
 import Foundation
 
-public enum WebsocketMessage {
-    case cellHighlight(CellHighlightMessage)
-    case bulkCRUD(BulkCRUDMessage)
-    case string(String)
-}
+// MARK: - WebsocketMessage
+public struct WebsocketMessage: Codable {
+    public let topic, gridId, msgSender: String
+    public let actionType: ActionType
+    public let userId: String?
+    public let userInfo: UserInfo?
+    public let updatedDateTime: Int?
+    public let payload: Payload?
+    public let cursorPosition: CursorPosition?
 
-public extension WebsocketMessage {
-    init?(data: Data) throws {
-        // Decode known types
-        let decoder = JSONDecoder()
-        if let message = try? decoder.decode(CellHighlightMessage.self, from: data) {
-            self = .cellHighlight(message)
-        } else
-        if let message = try? decoder.decode(BulkCRUDMessage.self, from: data) {
-            self = .bulkCRUD(message)
-        } else
-        // Return just string if the message wasn't recognized
-        if let string = String(data: data, encoding: .utf8) {
-            self = .string(string)
-        } else {
-            return nil
-        }
+    // MARK: - ActionType
+    public enum ActionType: String, Codable {
+        case cellHighlight
+        case removeCellHighlight
+        case bulk_crud
+        case leaveGrid
+        case openGrid
+    }
+
+    // MARK: - Payload
+    public struct Payload: Codable {
+        public let updateRows: UpdateRows
+    }
+
+    // MARK: - UpdateRows
+    public struct UpdateRows: Codable {
+        public let rows: [Row]
+    }
+
+    // MARK: - Row
+    public struct Row: Codable {
+        public let rowId: String
+        public let columns: [String: String] // Column name: Value
+        public let columnsIndex: ColumnsIndex
+    }
+
+    // MARK: - ColumnsIndex
+    public struct ColumnsIndex: Codable {
+        // FIXME: missing implementation
+    }
+
+    // MARK: - UserInfo
+    public struct UserInfo: Codable {
+        public let userId, userEmail, userName: String
+        public let uniqueSessionId: String?
+    }
+
+    // MARK: - CursorPosition
+    public struct CursorPosition: Codable {
+        public let rowIndex, columnName, columnIndex: String?
     }
 }
 
 
-public enum WebsocketActionType: String, Codable {
-    case cellHighlight
-    case bulk_crud
-    case leaveGrid
-    case openGrid
+public extension WebsocketMessage {
+    init(data: Data) throws {
+        let decoder = JSONDecoder()
+        let message = try decoder.decode(WebsocketMessage.self, from: data)
+        self = message
+    }
 }
