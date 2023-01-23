@@ -14,6 +14,6 @@ public struct GetMultiSheetMetadataResponse: Decodable {
 
     // MARK: - Grid
     public struct Grid: Decodable {
-        let gridId, name: String
+        public let gridId, name: String
     }
 }

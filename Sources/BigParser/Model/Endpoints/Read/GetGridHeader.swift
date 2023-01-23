@@ -17,7 +17,7 @@ public struct GetGridHeaderResponse: Decodable {
 
     // MARK: - Columns
     public struct Column: Decodable {
-        let columnName, columnDesc, dataType, columnIndex: String
-        let islinkedColumn, isPrimaryLink: Bool
+        public let columnName, columnDesc, dataType, columnIndex: String
+        public let islinkedColumn, isPrimaryLink: Bool
     }
 }
