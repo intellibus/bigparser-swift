@@ -10,6 +10,29 @@ import XCTest
 
 final class ReadTests: XCTestCase {
 
+    struct Employee: Decodable {
+        let address: String?
+        let ipAddress: String?
+        let phoneNumber: String
+        let lastTimeAvailable: String?
+
+        enum CodingKeys: String, CodingKey {
+            case address = "Address"
+            case geoData = "Geodata"
+            case ipAddress = "IP Address"
+            case phoneNumber = "Phone Number"
+            case lastTimeAvailable = "Last Time Available"
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.address = try container.decodeIfPresent(String.self, forKey: .address)
+            self.ipAddress = try container.decodeIfPresent(String.self, forKey: .ipAddress)
+            self.phoneNumber = try container.decode(String.self, forKey: .phoneNumber)
+            self.lastTimeAvailable = try container.decodeIfPresent(String.self, forKey: .lastTimeAvailable)
+        }
+    }
+
     private struct ReadConstants {
         static let gridId = "638f43e7cc3151353d14a63a"
         static let shareId = "638f48d68108ee25ecc3a11a"
@@ -42,11 +65,32 @@ final class ReadTests: XCTestCase {
         wait(for: [expectation], timeout: 3)
     }
 
-    func testGetGridHeader() async throws {
+    func testSearchGridWithEntityParsing() async throws {
+        let expectation = XCTestExpectation(description: "Search with Entity Parsing")
+
+        let filter = ColumnFilter.Filter(column: "Phone Number", keyword: "+420605478713", filterOperator: .EQ)
+        let request = SearchRequest(singleColumnFilter: filter)
+        let gridId = "63b3f7f2afe52c4a2373a9ed" // Employees.grid
+
+        do {
+            let employees: SearchResponseWithColumnNamesEntity<Employee> = try await BigParser.shared.searchGridWithColumnNamesEntity(
+                gridId,
+                shareId: ReadConstants.shareId,
+                request: request)
+            XCTAssertFalse(employees.rows.isEmpty)
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
+    func testQueryMetadata() async throws {
         let expectation = XCTestExpectation(description: "Get grid metadata")
 
         do {
-            let _ = try await BigParser.shared.getGridHeader(ReadConstants.gridId, shareId: ReadConstants.shareId)
+            let _ = try await BigParser.shared.queryMetadata(ReadConstants.gridId, shareId: ReadConstants.shareId)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
@@ -58,9 +102,8 @@ final class ReadTests: XCTestCase {
     func testGetGridMetadata() async throws {
         let expectation = XCTestExpectation(description: "Get grid metadata")
 
-
         do {
-            let _ = try await BigParser.shared.getMultiSheetMetadata(ReadConstants.gridId, shareId: ReadConstants.shareId)
+            let _ = try await BigParser.shared.queryMultiSheetMetadata(ReadConstants.gridId, shareId: ReadConstants.shareId)
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
@@ -79,7 +122,7 @@ final class ReadTests: XCTestCase {
         )
 
         do {
-            let _ = try await BigParser.shared.getSearchCount(
+            let _ = try await BigParser.shared.searchCount(
                 ReadConstants.gridId,
                 shareId: ReadConstants.shareId,
                 request: SearchCountRequest(query: query))
@@ -101,7 +144,7 @@ final class ReadTests: XCTestCase {
         )
 
         do {
-            let _ = try await BigParser.shared.getSearchKeywordsCount(
+            let _ = try await BigParser.shared.searchKeywordsCount(
                 ReadConstants.gridId,
                 shareId: ReadConstants.shareId,
                 request: SearchKeywordsCountRequest(query: query))

@@ -55,19 +55,26 @@ public final class BigParser {
         return try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: updatedSearchRequest)
     }
 
-    public func getGridHeader(_ gridId: String, shareId: String? = nil) async throws -> GetGridHeaderResponse {
+    public func searchGridWithColumnNamesEntity<T: Decodable>(_ gridId: String, shareId: String? = nil, request searchRequest: SearchRequest) async throws -> SearchResponseWithColumnNamesEntity<T> {
+        var updatedSearchRequest = searchRequest
+        updatedSearchRequest.query.showColumnNamesInResponse = true
+
+        return try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: updatedSearchRequest)
+    }
+
+    public func queryMetadata(_ gridId: String, shareId: String? = nil) async throws -> QueryMetadataResponse {
         try await request(method: .GET, path: "\(gridPath(gridId, shareId: shareId))/query_metadata")
     }
 
-    public func getMultiSheetMetadata(_ gridId: String, shareId: String? = nil) async throws -> GetMultiSheetMetadataResponse {
+    public func queryMultiSheetMetadata(_ gridId: String, shareId: String? = nil) async throws -> QueryMultiSheetMetadataResponse {
         try await request(method: .GET, path: "\(gridPath(gridId, shareId: shareId))/query_multisheet_metadata")
     }
 
-    public func getSearchCount(_ gridId: String, shareId: String? = nil, request searchCountRequest: SearchCountRequest) async throws -> SearchCountResponse {
+    public func searchCount(_ gridId: String, shareId: String? = nil, request searchCountRequest: SearchCountRequest) async throws -> SearchCountResponse {
         try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_count", request: searchCountRequest)
     }
 
-    public func getSearchKeywordsCount(_ gridId: String, shareId: String? = nil, request searchKeywordsCountRequest: SearchKeywordsCountRequest) async throws -> SearchKeywordsCountResponse {
+    public func searchKeywordsCount(_ gridId: String, shareId: String? = nil, request searchKeywordsCountRequest: SearchKeywordsCountRequest) async throws -> SearchKeywordsCountResponse {
         try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_keywords_count", request: searchKeywordsCountRequest)
     }
 

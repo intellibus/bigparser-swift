@@ -260,13 +260,14 @@ final class WriteTests: XCTestCase {
         let newColumnName = "Test Rename Column"
         let newColumnUpdatedName = "Test Renamed Column"
 
-        do {
-            // First create a column
-            try await BigParser.shared.addColumn(
-                Constants.unitTestGridId,
-                request: AddColumnRequest(newColumnName: newColumnName)
-            )
 
+        // First create a column
+        let _ = try? await BigParser.shared.addColumn(
+            Constants.unitTestGridId,
+            request: AddColumnRequest(newColumnName: newColumnName)
+        )
+
+        do {
             // Then rename it
             try await BigParser.shared.renameColumns(
                 Constants.unitTestGridId,

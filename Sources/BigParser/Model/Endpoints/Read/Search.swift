@@ -17,6 +17,7 @@ public struct SearchRequest: Encodable {
         let sort: [String: SortDirection]?
         let pagination: Pagination
         var showColumnNamesInResponse: Bool?
+        let sendRowIdsInResponse = true
     }
 }
 
@@ -66,4 +67,9 @@ public struct SearchResponse: Decodable {
 public struct SearchResponseWithColumnNames: Decodable {
     public let totalRowCount: Int
     public let rows: [[String: String?]]
+}
+
+public struct SearchResponseWithColumnNamesEntity<T: Decodable>: Decodable {
+    public let totalRowCount: Int
+    public let rows: [T]
 }
