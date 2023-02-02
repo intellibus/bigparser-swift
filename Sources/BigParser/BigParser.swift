@@ -15,7 +15,8 @@ public final class BigParser {
 
     private struct Constants {
         static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
-        static let apiBaseURLString: String = "https://qa.BigParser.com/api/v2/"
+        static let apiV2BaseURLString: String = "https://qa.BigParser.com/api/v2/"
+        static let apiV1BaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
         static let websocketURLString: String = "https://qa.bigparser.com/websocket-server/chat" // Must be without the forward slash at the end
     }
 
@@ -68,6 +69,10 @@ public final class BigParser {
 
     public func queryMultiSheetMetadata(_ gridId: String, shareId: String? = nil) async throws -> QueryMultiSheetMetadataResponse {
         try await request(method: .GET, path: "\(gridPath(gridId, shareId: shareId))/query_multisheet_metadata")
+    }
+
+    public func getGrids(query: String? = nil, request getGridsRequest: GetGridsRequest) async throws -> GetGridsResponse {
+        try await request(baseURLString: Constants.apiV1BaseURLString, method: .GET, path: "grid/get_grids", request: getGridsRequest)
     }
 
     public func searchCount(_ gridId: String, shareId: String? = nil, request searchCountRequest: SearchCountRequest) async throws -> SearchCountResponse {
@@ -220,20 +225,29 @@ public final class BigParser {
         }
     }
 
-    private func request<Response: Decodable>(method: HTTPMethod, path: String) async throws -> Response {
-        try await request(method: method, path: path, request: false)
+    private func request<Response: Decodable>(baseURLString: String = Constants.apiV2BaseURLString, method: HTTPMethod, path: String) async throws -> Response {
+        try await request(baseURLString: baseURLString, method: method, path: path, request: NoParameters())
     }
 
-    private func request<Request: Encodable, Response: Decodable>(baseURLString: String = Constants.apiBaseURLString, method: HTTPMethod, path: String, request: Request) async throws -> Response {
+    private func request<Request: Encodable, Response: Decodable>(baseURLString: String = Constants.apiV2BaseURLString, method: HTTPMethod, path: String, request: Request) async throws -> Response {
         return try await withCheckedThrowingContinuation({
             (continuation: CheckedContinuation<Response, Error>) in
-            let url = URL(string: baseURLString + path)!
+            var url = URL(string: baseURLString + path)!
             var urlRequest = URLRequest(url: url)
 
-            if request is Bool == false {
+            // NoParameters type for a request parameter means we shouldn't encode any parameters
+            if request is NoParameters == false {
                 do {
-                    urlRequest.httpBody = try JSONEncoder().encode(request)
-                    urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                    if method == .GET {
+                        let queryItems = try request.getUrlQueryItems()
+                        var components = URLComponents(string: url.absoluteString)!
+                        components.queryItems = queryItems
+                        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+                        urlRequest = URLRequest(url: components.url!)
+                    } else {
+                        urlRequest.httpBody = try JSONEncoder().encode(request)
+                        urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                    }
                 } catch {
                     continuation.resume(throwing: error)
                     return
@@ -300,3 +314,17 @@ public final class BigParser {
 protocol AnyTypeOfArrayResponse { }
 extension Array: AnyTypeOfArrayResponse { }
 extension NSArray: AnyTypeOfArrayResponse { }
+
+struct NoParameters: Encodable { }
+
+extension Encodable {
+
+    func getUrlQueryItems() throws -> [URLQueryItem] {
+        let data = try JSONEncoder().encode(self)
+        let json = try JSONSerialization.jsonObject(with: data)
+        if let dictionary = json as? [String: Any] {
+            return dictionary.map({ URLQueryItem(name: $0.key, value: "\($0.value)") })
+        }
+        return []
+    }
+}

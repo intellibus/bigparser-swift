@@ -112,6 +112,19 @@ final class ReadTests: XCTestCase {
         wait(for: [expectation], timeout: 3)
     }
 
+    func testGetGrids() async throws {
+        let expectation = XCTestExpectation(description: "Get grids")
+
+        do {
+            let _ = try await BigParser.shared.getGrids(query: "", request: GetGridsRequest(startIndex: 1, endIndex: 26, searchKeyword: "a"))
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        wait(for: [expectation], timeout: 3)
+    }
+
     func testSearchCount() async throws {
         let expectation = XCTestExpectation(description: "Search Count")
 
