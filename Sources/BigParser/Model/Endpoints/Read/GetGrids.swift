@@ -11,9 +11,21 @@ public struct GetGridsRequest: Encodable {
     public var startIndex: UInt
     public var endIndex: UInt
     public let searchKeyword: String
+
+    public init(startIndex: UInt = 1, endIndex: UInt, searchKeyword: String) {
+        self.startIndex = startIndex
+        self.endIndex = endIndex
+        self.searchKeyword = searchKeyword
+    }
 }
 
 public extension GetGridsRequest {
+    init(pageSize: UInt, searchKeyword: String) {
+        self.startIndex = 1
+        self.endIndex = pageSize
+        self.searchKeyword = searchKeyword
+    }
+
     func addingPage(size: UInt) -> GetGridsRequest {
         var nextPage = self
         nextPage.startIndex += size
