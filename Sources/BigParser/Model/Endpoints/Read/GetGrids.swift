@@ -61,3 +61,13 @@ public struct GetGridsResponse: Codable {
     }
 
 }
+
+public extension GetGridsResponse.File {
+    var name: String {
+        fileName ?? storeFileName ?? ""
+    }
+
+    var nameWithoutExtension: String {
+        name.components(separatedBy: ".").first ?? ""
+    }
+}
