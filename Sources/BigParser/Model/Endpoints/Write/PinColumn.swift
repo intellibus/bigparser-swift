@@ -15,6 +15,11 @@ public struct PinColumnRequest: Encodable {
         case left
         case right
     }
+
+    public init(columnName: String, columnPinType: PinType) {
+        self.columnName = columnName
+        self.columnPinType = columnPinType
+    }
 }
 
 public struct PinColumnResponse: Decodable {

@@ -10,6 +10,11 @@ import Foundation
 public struct CreateGridRequest: Encodable {
     public let gridName: String
     public var gridDescription: String?
+
+    public init(gridName: String, gridDescription: String? = nil) {
+        self.gridName = gridName
+        self.gridDescription = gridDescription
+    }
 }
 
 public struct CreateGridResponse: Decodable {

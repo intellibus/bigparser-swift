@@ -10,6 +10,11 @@ import Foundation
 public struct UpdateColumnDescriptionRequest: Encodable {
     public let columnName: String
     public let columnDesc: String
+
+    public init(columnName: String, columnDesc: String) {
+        self.columnName = columnName
+        self.columnDesc = columnDesc
+    }
 }
 
 public struct UpdateColumnDescriptionResponse: Decodable {

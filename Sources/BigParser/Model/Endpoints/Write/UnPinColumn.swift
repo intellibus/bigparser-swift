@@ -9,6 +9,10 @@ import Foundation
 
 public struct UnPinColumnRequest: Encodable {
     public let columnName: String
+
+    public init(columnName: String) {
+        self.columnName = columnName
+    }
 }
 
 public struct UnPinColumnResponse: Decodable {
