@@ -8,7 +8,7 @@
 import Foundation
 
 public struct UnPinAllColumnsRequest: Encodable {
-
+    public init() {}
 }
 
 public struct UnPinAllColumnResponse: Decodable {

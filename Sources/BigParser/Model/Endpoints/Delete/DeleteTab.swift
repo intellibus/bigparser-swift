@@ -8,7 +8,7 @@
 import Foundation
 
 public struct DeleteTabRequest: Encodable {
-
+    public init() {}
 }
 
 public struct DeleteTabResponse: Decodable {

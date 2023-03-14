@@ -153,7 +153,7 @@ public final class BigParser {
     }
 
     @discardableResult
-    public func unPinAllColumns(_ gridId: String, request unPinAllColumnsRequest: UnPinAllColumnsRequest) async throws -> UnPinAllColumnResponse {
+    public func unPinAllColumns(_ gridId: String, request unPinAllColumnsRequest: UnPinAllColumnsRequest = UnPinAllColumnsRequest()) async throws -> UnPinAllColumnResponse {
         try await request(method: .POST, path: "grid/\(gridId)/unpin_all_columns", request: unPinAllColumnsRequest)
     }
 
@@ -165,7 +165,7 @@ public final class BigParser {
     // MARK: - Delete operations
 
     @discardableResult
-    public func deleteTab(_ gridId: String, request deleteTabRequest: DeleteTabRequest) async throws -> DeleteTabResponse {
+    public func deleteTab(_ gridId: String, request deleteTabRequest: DeleteTabRequest = DeleteTabRequest()) async throws -> DeleteTabResponse {
         try await request(method: .DELETE, path: "grid/\(gridId)/delete_tab", request: deleteTabRequest)
     }
 
