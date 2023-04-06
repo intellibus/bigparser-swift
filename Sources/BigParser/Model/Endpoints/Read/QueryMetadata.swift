@@ -17,7 +17,7 @@ public struct QueryMetadataResponse: Codable {
     public let auditGridId: String
     public let originalGridId: String?
     public let lastUpdatedTimeInBigParser: Int
-    public let lastUpdatedBy: String
+    public let lastUpdatedBy: String?
     public let tabName: String
     public let showRowId: Bool
     public let viewType: String // FIXME: define the enum
