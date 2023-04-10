@@ -13,11 +13,18 @@ public final class BigParser {
 
     // MARK: - Type Definitions
 
+    var environment: Environment = .production
+
+    public enum Environment: String {
+        case qa = "https://qa.bigparser.com/"
+        case production = "https://bigparser.com/"
+    }
+
     private struct Constants {
-        static let authBaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
-        static let apiV2BaseURLString: String = "https://qa.BigParser.com/api/v2/"
-        static let apiV1BaseURLString: String = "https://qa.bigparser.com/APIServices/api/"
-        static let websocketURLString: String = "https://qa.bigparser.com/websocket-server/chat" // Must be without the forward slash at the end
+        static let authBasePath: String = "APIServices/api/"
+        static let apiV2BasePath: String = "api/v2/"
+        static let apiV1BasePath: String = "APIServices/api/"
+        static let websocketPath: String = "websocket-server/chat" // Must be without the forward slash at the end
     }
 
     private enum HTTPMethod: String {
@@ -28,12 +35,12 @@ public final class BigParser {
 
     @discardableResult
     public func signUp(_ signUpRequest: SignUpRequest) async throws -> SignUpResponse {
-        try await request(baseURLString: Constants.authBaseURLString, method: .POST, path: "common/signup", request: signUpRequest)
+        try await request(basePath: Constants.authBasePath, method: .POST, path: "common/signup", request: signUpRequest)
     }
 
     @discardableResult
     public func logIn(_ loginRequest: LoginRequest) async throws -> LoginResponse {
-        let response: LoginResponse = try await request(baseURLString: Constants.authBaseURLString, method: .POST, path: "common/login", request: loginRequest)
+        let response: LoginResponse = try await request(basePath: Constants.authBasePath, method: .POST, path: "common/login", request: loginRequest)
 
         authId = response.authId
         return response
@@ -72,7 +79,7 @@ public final class BigParser {
     }
 
     public func getGrids(query: String? = nil, request getGridsRequest: GetGridsRequest) async throws -> GetGridsResponse {
-        try await request(baseURLString: Constants.apiV1BaseURLString, method: .GET, path: "grid/get_grids", request: getGridsRequest)
+        try await request(basePath: Constants.apiV1BasePath, method: .GET, path: "grid/get_grids", request: getGridsRequest)
     }
 
     public func searchCount(_ gridId: String, shareId: String? = nil, request searchCountRequest: SearchCountRequest) async throws -> SearchCountResponse {
@@ -198,7 +205,7 @@ public final class BigParser {
         ]
         subscribeHeaders["shareId"] = shareId // Optional
 
-        let url = Constants.websocketURLString
+        let url = environment.rawValue + Constants.websocketPath
         return WebSocketStompStream(url: url, authId: authId, topic: topic, subscribeHeaders: subscribeHeaders)
     }
 
@@ -211,7 +218,7 @@ public final class BigParser {
         let subscribeHeaders = [
             "authId": authId
         ]
-        let url = Constants.websocketURLString
+        let url = environment.rawValue + Constants.websocketPath
         return WebSocketStompStream(url: url, authId: authId, topic: topic, subscribeHeaders: subscribeHeaders)
     }
 
@@ -225,14 +232,14 @@ public final class BigParser {
         }
     }
 
-    private func request<Response: Decodable>(baseURLString: String = Constants.apiV2BaseURLString, method: HTTPMethod, path: String) async throws -> Response {
-        try await request(baseURLString: baseURLString, method: method, path: path, request: NoParameters())
+    private func request<Response: Decodable>(basePath: String = Constants.apiV2BasePath, method: HTTPMethod, path: String) async throws -> Response {
+        try await request(basePath: basePath, method: method, path: path, request: NoParameters())
     }
 
-    private func request<Request: Encodable, Response: Decodable>(baseURLString: String = Constants.apiV2BaseURLString, method: HTTPMethod, path: String, request: Request) async throws -> Response {
+    private func request<Request: Encodable, Response: Decodable>(basePath: String = Constants.apiV2BasePath, method: HTTPMethod, path: String, request: Request) async throws -> Response {
         return try await withCheckedThrowingContinuation({
             (continuation: CheckedContinuation<Response, Error>) in
-            var url = URL(string: baseURLString + path)!
+            let url = URL(string: environment.rawValue + basePath + path)!
             var urlRequest = URLRequest(url: url)
 
             // NoParameters type for a request parameter means we shouldn't encode any parameters

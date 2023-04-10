@@ -120,7 +120,7 @@ final class DeleteTests: XCTestCase {
     func testDeleteGrid() async throws {
         let expectation = XCTestExpectation(description: "Delete Tab")
 
-        let parentGridId = "63c9b0fedf96950e4c2a1bde"
+        let parentGridId = Constants.unitTestGridId
 
         do {
             // First create a tab

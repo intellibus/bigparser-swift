@@ -34,8 +34,8 @@ final class ReadTests: XCTestCase {
     }
 
     private struct ReadConstants {
-        static let gridId = "63bd82d59f35ef5631b859e9"
-        static let shareId = "63be4e66cd017138264286c7"
+        static let gridId = "63da91507ae3f2484bba8bdf"
+        static let shareId = "63da924f69c8f049da05ccf5"
     }
 
     override func setUpWithError() throws {
@@ -70,7 +70,7 @@ final class ReadTests: XCTestCase {
 
         let filter = ColumnFilter.Filter(column: "Phone Number", keyword: "+420605478713", filterOperator: .EQ)
         let request = SearchRequest(singleColumnFilter: filter)
-        let gridId = "63b3f7f2afe52c4a2373a9ed" // Employees.grid
+        let gridId = "64305f9238deba58c7b5db5c" // Employees.grid
 
         do {
             let employees: SearchResponseWithColumnNamesEntity<Employee> = try await BigParser.shared.searchGridWithColumnNamesEntity(
