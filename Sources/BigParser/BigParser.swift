@@ -10,6 +10,7 @@ public final class BigParser {
     }
 
     public var authId: String?
+    public var bearerToken: String?
 
     // MARK: - Type Definitions
 
@@ -264,6 +265,9 @@ public final class BigParser {
 
             if let authId = authId {
                 urlRequest.addValue(authId, forHTTPHeaderField: "authId")
+            }
+            if let bearerToken = bearerToken {
+                urlRequest.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
             }
             Console.log("curl:\n\(urlRequest.curlString)")
 
