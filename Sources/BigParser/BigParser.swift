@@ -14,7 +14,7 @@ public final class BigParser {
 
     // MARK: - Type Definitions
 
-    var environment: Environment = .production
+    public var environment: Environment = .production
 
     public enum Environment: String {
         case qa = "https://qa.bigparser.com/"
