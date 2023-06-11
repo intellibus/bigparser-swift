@@ -12,7 +12,7 @@ public struct GetGridsRequest: Encodable {
     public var endIndex: UInt
     public let searchKeyword: String
 
-    public init(startIndex: UInt = 1, endIndex: UInt, searchKeyword: String) {
+    public init(startIndex: UInt = 1, endIndex: UInt, searchKeyword: String = "") {
         self.startIndex = startIndex
         self.endIndex = endIndex
         self.searchKeyword = searchKeyword

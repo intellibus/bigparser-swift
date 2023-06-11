@@ -269,12 +269,15 @@ public final class BigParser {
             if let bearerToken = bearerToken {
                 urlRequest.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
             }
-            Console.log("curl:\n\(urlRequest.curlString)")
+
+            let urlRequestCurlString = urlRequest.curlString
 
             URLSession.shared.dataTask(
                 with: urlRequest,
                 completionHandler: { data, response, error in
+                    Console.log("curl:\n\(urlRequestCurlString)")
                     if let error = error {
+                        Console.log("Error:\n\(error)")
                         continuation.resume(throwing: error)
                     } else {
                         if var data = data {
