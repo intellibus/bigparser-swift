@@ -38,12 +38,14 @@ final class ReadTests: XCTestCase {
         static let shareId = "63da924f69c8f049da05ccf5"
     }
 
+    var auth: BigParser.Authorization = .none
+
     override func setUpWithError() throws {
-        BigParser.shared.authId = Constants.authId
+        auth = BigParser.Authorization.authId(Constants.authId)
     }
 
     override func tearDownWithError() throws {
-        BigParser.shared.authId = nil
+        auth = .none
     }
 
     func testSearchGrid() async throws {
@@ -54,7 +56,8 @@ final class ReadTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.searchGrid(
-                ReadConstants.gridId,
+                auth: auth,
+                gridId: ReadConstants.gridId,
                 shareId: ReadConstants.shareId,
                 request: request)
             expectation.fulfill()
@@ -62,7 +65,7 @@ final class ReadTests: XCTestCase {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testSearchGridWithEntityParsing() async throws {
@@ -70,11 +73,12 @@ final class ReadTests: XCTestCase {
 
         let filter = ColumnFilter.Filter(column: "Phone Number", keyword: "+420605478713", filterOperator: .EQ)
         let request = SearchRequest(singleColumnFilter: filter)
-        let gridId = "64305f9238deba58c7b5db5c" // Employees.grid
+        let gridId = "6439929738deba58c7b5dbc6" // Employees.grid
 
         do {
             let employees: SearchResponseWithColumnNamesEntity<Employee> = try await BigParser.shared.searchGridWithColumnNamesEntity(
-                gridId,
+                auth: auth,
+                gridId: gridId,
                 shareId: ReadConstants.shareId,
                 request: request)
             XCTAssertFalse(employees.rows.isEmpty)
@@ -83,46 +87,56 @@ final class ReadTests: XCTestCase {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testQueryMetadata() async throws {
         let expectation = XCTestExpectation(description: "Get grid metadata")
 
         do {
-            let _ = try await BigParser.shared.queryMetadata(ReadConstants.gridId, shareId: ReadConstants.shareId)
+            let _ = try await BigParser.shared.queryMetadata(
+                auth: auth,
+                gridId: ReadConstants.gridId,
+                shareId: ReadConstants.shareId
+            )
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testGetGridMetadata() async throws {
         let expectation = XCTestExpectation(description: "Get grid metadata")
 
         do {
-            let _ = try await BigParser.shared.queryMultiSheetMetadata(ReadConstants.gridId, shareId: ReadConstants.shareId)
+            let _ = try await BigParser.shared.queryMultiSheetMetadata(
+                auth: auth,
+                gridId: ReadConstants.gridId,
+                shareId: ReadConstants.shareId
+            )
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testGetGrids() async throws {
         let expectation = XCTestExpectation(description: "Get grids")
 
         do {
-            let _ = try await BigParser.shared.getGrids(query: "", request: GetGridsRequest(startIndex: 1, endIndex: 26, searchKeyword: "a"))
+            let _ = try await BigParser.shared.getGrids(
+                auth: auth,
+                query: "", request: GetGridsRequest(startIndex: 1, endIndex: 26, searchKeyword: "a"))
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testSearchCount() async throws {
@@ -136,7 +150,8 @@ final class ReadTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.searchCount(
-                ReadConstants.gridId,
+                auth: auth,
+                gridId: ReadConstants.gridId,
                 shareId: ReadConstants.shareId,
                 request: SearchCountRequest(query: query))
             expectation.fulfill()
@@ -144,7 +159,7 @@ final class ReadTests: XCTestCase {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testSearchKeywordsCount() async throws {
@@ -158,7 +173,8 @@ final class ReadTests: XCTestCase {
 
         do {
             let _ = try await BigParser.shared.searchKeywordsCount(
-                ReadConstants.gridId,
+                auth: auth,
+                gridId: ReadConstants.gridId,
                 shareId: ReadConstants.shareId,
                 request: SearchKeywordsCountRequest(query: query))
             expectation.fulfill()
@@ -166,7 +182,7 @@ final class ReadTests: XCTestCase {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
 }

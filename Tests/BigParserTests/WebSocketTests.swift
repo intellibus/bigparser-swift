@@ -10,12 +10,14 @@ import XCTest
 
 final class WebSocketTests: XCTestCase {
 
+    var auth: BigParser.Authorization = .none
+
     override func setUpWithError() throws {
-        BigParser.shared.authId = Constants.authId
+        auth = BigParser.Authorization.authId(Constants.authId)
     }
 
     override func tearDownWithError() throws {
-        BigParser.shared.authId = nil
+        auth = .none
     }
 
     func testJSGridUpdates() async throws {
@@ -23,7 +25,8 @@ final class WebSocketTests: XCTestCase {
 
         do {
             for try await message in try BigParser.shared.streamGridUpdates(
-                Constants.unitTestGridId
+                auth: auth,
+                gridId: Constants.unitTestGridId
             ) {
                 Console.log(message)
                 expectation.fulfill()
@@ -33,7 +36,7 @@ final class WebSocketTests: XCTestCase {
         }
 
         sleep(50)
-        wait(for: [expectation], timeout: 300)
+        await fulfillment(of: [expectation], timeout: 300)
     }
 
     func testJSGridListUpdates() async throws {
@@ -41,7 +44,8 @@ final class WebSocketTests: XCTestCase {
 
         do {
             for try await message in try BigParser.shared.streamGridListUpdates(
-                Constants.userId
+                auth: auth,
+                userId: Constants.userId
             ) {
                 Console.log(message)
                 expectation.fulfill()
@@ -51,6 +55,6 @@ final class WebSocketTests: XCTestCase {
         }
 
         sleep(50)
-        wait(for: [expectation], timeout: 300)
+        await fulfillment(of: [expectation], timeout: 300)
     }
 }

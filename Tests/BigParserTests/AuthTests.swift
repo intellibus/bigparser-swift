@@ -17,7 +17,7 @@ final class AuthTests: XCTestCase {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testSignUp() async throws {
@@ -36,6 +36,6 @@ final class AuthTests: XCTestCase {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 }

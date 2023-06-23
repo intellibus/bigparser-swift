@@ -9,9 +9,6 @@ public final class BigParser {
 
     }
 
-    public var authId: String?
-    public var bearerToken: String?
-
     // MARK: - Type Definitions
 
     public var environment: Environment = .production
@@ -19,6 +16,12 @@ public final class BigParser {
     public enum Environment: String {
         case qa = "https://qa.bigparser.com/"
         case production = "https://bigparser.com/"
+    }
+
+    public enum Authorization {
+        case none
+        case authId(String)
+        case bearerToken(String)
     }
 
     private struct Constants {
@@ -36,182 +39,196 @@ public final class BigParser {
 
     @discardableResult
     public func signUp(_ signUpRequest: SignUpRequest) async throws -> SignUpResponse {
-        try await request(basePath: Constants.authBasePath, method: .POST, path: "common/signup", request: signUpRequest)
+        try await request(auth: .none, basePath: Constants.authBasePath, method: .POST, path: "common/signup", request: signUpRequest)
     }
 
     @discardableResult
     public func logIn(_ loginRequest: LoginRequest) async throws -> LoginResponse {
-        let response: LoginResponse = try await request(basePath: Constants.authBasePath, method: .POST, path: "common/login", request: loginRequest)
+        let response: LoginResponse = try await request(auth: .none, basePath: Constants.authBasePath, method: .POST, path: "common/login", request: loginRequest)
 
-        authId = response.authId
         return response
     }
 
     public func logOut() {
-        authId = nil
+        // Does nothing for now
     }
 
     // MARK: - Read operations
 
-    public func searchGrid(_ gridId: String, shareId: String? = nil, request searchRequest: SearchRequest) async throws -> SearchResponse {
-        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: searchRequest)
+    public func searchGrid(auth: Authorization, gridId: String, shareId: String? = nil, request searchRequest: SearchRequest) async throws -> SearchResponse {
+        try await request(auth: auth, method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: searchRequest)
     }
 
-    public func searchGridWithColumnNames(_ gridId: String, shareId: String? = nil, request searchRequest: SearchRequest) async throws -> SearchResponseWithColumnNames {
+    public func searchGridWithColumnNames(auth: Authorization, gridId: String, shareId: String? = nil, request searchRequest: SearchRequest) async throws -> SearchResponseWithColumnNames {
         var updatedSearchRequest = searchRequest
         updatedSearchRequest.query.showColumnNamesInResponse = true
 
-        return try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: updatedSearchRequest)
+        return try await request(auth: auth, method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: updatedSearchRequest)
     }
 
-    public func searchGridWithColumnNamesEntity<T: Decodable>(_ gridId: String, shareId: String? = nil, request searchRequest: SearchRequest) async throws -> SearchResponseWithColumnNamesEntity<T> {
+    public func searchGridWithColumnNamesEntity<T: Decodable>(auth: Authorization, gridId: String, shareId: String? = nil, request searchRequest: SearchRequest) async throws -> SearchResponseWithColumnNamesEntity<T> {
         var updatedSearchRequest = searchRequest
         updatedSearchRequest.query.showColumnNamesInResponse = true
 
-        return try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: updatedSearchRequest)
+        return try await request(auth: auth, method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search", request: updatedSearchRequest)
     }
 
-    public func queryMetadata(_ gridId: String, shareId: String? = nil) async throws -> QueryMetadataResponse {
-        try await request(method: .GET, path: "\(gridPath(gridId, shareId: shareId))/query_metadata")
+    public func queryMetadata(auth: Authorization, gridId: String, shareId: String? = nil) async throws -> QueryMetadataResponse {
+        try await request(auth: auth, method: .GET, path: "\(gridPath(gridId, shareId: shareId))/query_metadata")
     }
 
-    public func queryMultiSheetMetadata(_ gridId: String, shareId: String? = nil) async throws -> QueryMultiSheetMetadataResponse {
-        try await request(method: .GET, path: "\(gridPath(gridId, shareId: shareId))/query_multisheet_metadata")
+    public func queryMultiSheetMetadata(auth: Authorization, gridId: String, shareId: String? = nil) async throws -> QueryMultiSheetMetadataResponse {
+        try await request(auth: auth, method: .GET, path: "\(gridPath(gridId, shareId: shareId))/query_multisheet_metadata")
     }
 
-    public func getGrids(query: String? = nil, request getGridsRequest: GetGridsRequest) async throws -> GetGridsResponse {
-        try await request(basePath: Constants.apiV1BasePath, method: .GET, path: "grid/get_grids", request: getGridsRequest)
+    public func getGrids(auth: Authorization, query: String? = nil, request getGridsRequest: GetGridsRequest) async throws -> GetGridsResponse {
+        try await request(auth: auth, basePath: Constants.apiV1BasePath, method: .GET, path: "grid/get_grids", request: getGridsRequest)
     }
 
-    public func searchCount(_ gridId: String, shareId: String? = nil, request searchCountRequest: SearchCountRequest) async throws -> SearchCountResponse {
-        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_count", request: searchCountRequest)
+    public func searchCount(auth: Authorization, gridId: String, shareId: String? = nil, request searchCountRequest: SearchCountRequest) async throws -> SearchCountResponse {
+        try await request(auth: auth, method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_count", request: searchCountRequest)
     }
 
-    public func searchKeywordsCount(_ gridId: String, shareId: String? = nil, request searchKeywordsCountRequest: SearchKeywordsCountRequest) async throws -> SearchKeywordsCountResponse {
-        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_keywords_count", request: searchKeywordsCountRequest)
+    public func searchKeywordsCount(auth: Authorization, gridId: String, shareId: String? = nil, request searchKeywordsCountRequest: SearchKeywordsCountRequest) async throws -> SearchKeywordsCountResponse {
+        try await request(auth: auth, method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_keywords_count", request: searchKeywordsCountRequest)
     }
 
     // MARK: - Write operations
 
     @discardableResult
-    public func createGrid(request createGridRequest: CreateGridRequest) async throws -> CreateGridResponse {
-        try await request(method: .POST, path: "grid/create_grid", request: createGridRequest)
+    public func createGrid(auth: Authorization, request createGridRequest: CreateGridRequest) async throws -> CreateGridResponse {
+        try await request(auth: auth, method: .POST, path: "grid/create_grid", request: createGridRequest)
     }
 
     /// The gridId represents the id of the grid which should be a parent to the new tab (which is also represented by a grid)
     @discardableResult
-    public func createTab(_ gridId: String, request createTabRequest: CreateTabRequest) async throws -> CreateTabResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/create_tab", request: createTabRequest)
+    public func createTab(auth: Authorization, gridId: String, request createTabRequest: CreateTabRequest) async throws -> CreateTabResponse {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/create_tab", request: createTabRequest)
     }
 
     /// The gridId represents the id of this tab
     @discardableResult
-    public func updateTab(_ gridId: String, request updateTabRequest: UpdateTabRequest) async throws -> UpdateTabResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/update_tab", request: updateTabRequest)
+    public func updateTab(auth: Authorization, gridId: String, request updateTabRequest: UpdateTabRequest) async throws -> UpdateTabResponse {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/update_tab", request: updateTabRequest)
     }
 
     @discardableResult
-    public func insertRows(_ gridId: String, shareId: String? = nil, request insertRowsRequest: InsertRowsRequest) async throws -> InsertRowsResponse {
-        try await request(method: .POST, path: "\(gridPath(gridId, shareId: shareId))/rows/create", request: insertRowsRequest)
+    public func insertRows(auth: Authorization, gridId: String, shareId: String? = nil, request insertRowsRequest: InsertRowsRequest) async throws -> InsertRowsResponse {
+        try await request(auth: auth, method: .POST, path: "\(gridPath(gridId, shareId: shareId))/rows/create", request: insertRowsRequest)
     }
 
     @discardableResult
-    public func updateOrInsertRows(_ gridId: String, shareId: String? = nil, request updateRowsRequest: UpdateRowsRequest) async throws -> UpdateRowsResponse {
-        try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_rowIds", request: updateRowsRequest)
+    public func updateOrInsertRows(auth: Authorization, gridId: String, shareId: String? = nil, request updateRowsRequest: UpdateRowsRequest) async throws -> UpdateRowsResponse {
+        try await request(auth: auth, method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_rowIds", request: updateRowsRequest)
     }
 
     @discardableResult
-    public func updateRows(_ gridId: String, shareId: String? = nil, request updateRowsByQueryRequest: UpdateRowsByQueryRequest) async throws -> UpdateRowsByQueryResponse {
-        try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_queryObj", request: updateRowsByQueryRequest)
+    public func updateRows(auth: Authorization, gridId: String, shareId: String? = nil, request updateRowsByQueryRequest: UpdateRowsByQueryRequest) async throws -> UpdateRowsByQueryResponse {
+        try await request(auth: auth, method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/rows/update_by_queryObj", request: updateRowsByQueryRequest)
     }
 
     @discardableResult
-    public func updateColumnDataType(_ gridId: String, shareId: String? = nil, request updateColumnDataTypeRequest: UpdateColumnDataTypeRequest) async throws -> UpdateColumnDataTypeResponse {
-        try await request(method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/update_column_datatype", request: updateColumnDataTypeRequest)
+    public func updateColumnDataType(auth: Authorization, gridId: String, shareId: String? = nil, request updateColumnDataTypeRequest: UpdateColumnDataTypeRequest) async throws -> UpdateColumnDataTypeResponse {
+        try await request(auth: auth, method: .PUT, path: "\(gridPath(gridId, shareId: shareId))/update_column_datatype", request: updateColumnDataTypeRequest)
     }
 
     @discardableResult
-    public func addColumn(_ gridId: String, request addColumnRequest: AddColumnRequest) async throws -> AddColumnResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/add_column", request: addColumnRequest)
+    public func addColumn(auth: Authorization, gridId: String, request addColumnRequest: AddColumnRequest) async throws -> AddColumnResponse {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/add_column", request: addColumnRequest)
     }
 
     @discardableResult
-    public func addColumns(_ gridId: String, request addColumnsRequest: AddColumnsRequest) async throws -> [AddColumnsResponse] {
-        try await request(method: .POST, path: "grid/\(gridId)/add_columns", request: addColumnsRequest)
+    public func addColumns(auth: Authorization, gridId: String, request addColumnsRequest: AddColumnsRequest) async throws -> [AddColumnsResponse] {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/add_columns", request: addColumnsRequest)
     }
 
     @discardableResult
-    public func renameColumns(_ gridId: String, request renameColumnsRequest: RenameColumnsRequest) async throws -> RenameColumnsResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/rename_columns", request: renameColumnsRequest)
+    public func renameColumns(auth: Authorization, gridId: String, request renameColumnsRequest: RenameColumnsRequest) async throws -> RenameColumnsResponse {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/rename_columns", request: renameColumnsRequest)
     }
 
     @discardableResult
-    public func reorderColumn(_ gridId: String, request reorderColumnRequest: ReorderColumnRequest) async throws -> ReorderColumnResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/reorder_column", request: reorderColumnRequest)
+    public func reorderColumn(auth: Authorization, gridId: String, request reorderColumnRequest: ReorderColumnRequest) async throws -> ReorderColumnResponse {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/reorder_column", request: reorderColumnRequest)
     }
 
     @discardableResult
-    public func pinColumn(_ gridId: String, request pinColumnRequest: PinColumnRequest) async throws -> PinColumnResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/pin_column", request: pinColumnRequest)
+    public func pinColumn(auth: Authorization, gridId: String, request pinColumnRequest: PinColumnRequest) async throws -> PinColumnResponse {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/pin_column", request: pinColumnRequest)
     }
 
     @discardableResult
-    public func unPinColumn(_ gridId: String, request unPinColumnRequest: UnPinColumnRequest) async throws -> UnPinColumnResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/unpin_column", request: unPinColumnRequest)
+    public func unPinColumn(auth: Authorization, gridId: String, request unPinColumnRequest: UnPinColumnRequest) async throws -> UnPinColumnResponse {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/unpin_column", request: unPinColumnRequest)
     }
 
     @discardableResult
-    public func unPinAllColumns(_ gridId: String, request unPinAllColumnsRequest: UnPinAllColumnsRequest = UnPinAllColumnsRequest()) async throws -> UnPinAllColumnResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/unpin_all_columns", request: unPinAllColumnsRequest)
+    public func unPinAllColumns(auth: Authorization, gridId: String, request unPinAllColumnsRequest: UnPinAllColumnsRequest = UnPinAllColumnsRequest()) async throws -> UnPinAllColumnResponse {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/unpin_all_columns", request: unPinAllColumnsRequest)
     }
 
     @discardableResult
-    public func updateColumnDescription(_ gridId: String, request updateColumnDescriptionRequest: UpdateColumnDescriptionRequest) async throws -> UpdateColumnDescriptionResponse {
-        try await request(method: .POST, path: "grid/\(gridId)/update_column_desc", request: updateColumnDescriptionRequest)
+    public func updateColumnDescription(auth: Authorization, gridId: String, request updateColumnDescriptionRequest: UpdateColumnDescriptionRequest) async throws -> UpdateColumnDescriptionResponse {
+        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/update_column_desc", request: updateColumnDescriptionRequest)
     }
 
     // MARK: - Delete operations
 
     @discardableResult
-    public func deleteTab(_ gridId: String, request deleteTabRequest: DeleteTabRequest = DeleteTabRequest()) async throws -> DeleteTabResponse {
-        try await request(method: .DELETE, path: "grid/\(gridId)/delete_tab", request: deleteTabRequest)
+    public func deleteTab(auth: Authorization, gridId: String, request deleteTabRequest: DeleteTabRequest = DeleteTabRequest()) async throws -> DeleteTabResponse {
+        try await request(auth: auth, method: .DELETE, path: "grid/\(gridId)/delete_tab", request: deleteTabRequest)
     }
 
     @discardableResult
-    public func deleteRows(_ gridId: String, shareId: String? = nil, request deleteRowsRequest: DeleteRowsRequest) async throws -> DeleteRowsResponse {
-        try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_rowIds", request: deleteRowsRequest)
+    public func deleteRows(auth: Authorization, gridId: String, shareId: String? = nil, request deleteRowsRequest: DeleteRowsRequest) async throws -> DeleteRowsResponse {
+        try await request(auth: auth, method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_rowIds", request: deleteRowsRequest)
     }
 
     @discardableResult
-    public func deleteRows(_ gridId: String, shareId: String? = nil, request deleteRowsByQueryRequest: DeleteRowsByQueryRequest) async throws -> DeleteRowsByQueryResponse {
-        try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_queryObj", request: deleteRowsByQueryRequest)
+    public func deleteRows(auth: Authorization, gridId: String, shareId: String? = nil, request deleteRowsByQueryRequest: DeleteRowsByQueryRequest) async throws -> DeleteRowsByQueryResponse {
+        try await request(auth: auth, method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/rows/delete_by_queryObj", request: deleteRowsByQueryRequest)
     }
 
     @discardableResult
-    public func removeColumns(_ gridId: String, shareId: String? = nil, request removeColumnsRequest: RemoveColumnsRequest) async throws -> RemoveColumnsResponse {
-        try await request(method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/remove_columns", request: removeColumnsRequest)
+    public func removeColumns(auth: Authorization, gridId: String, shareId: String? = nil, request removeColumnsRequest: RemoveColumnsRequest) async throws -> RemoveColumnsResponse {
+        try await request(auth: auth, method: .DELETE, path: "\(gridPath(gridId, shareId: shareId))/remove_columns", request: removeColumnsRequest)
     }
+
 
     // MARK: - WebSocket
 
-    public func streamGridUpdates(_ gridId: String, shareId: String? = nil) throws -> WebSocketStompStream {
+    public func streamGridUpdates(auth: Authorization, gridId: String, shareId: String? = nil) throws -> WebSocketStompStream {
+
+
+        var subscribeHeaders = [
+            "gridId": gridId
+        ]
+
+        var authId: String?
+        switch auth {
+        case .authId(let id):
+            subscribeHeaders["authId"] = id
+            authId = id
+        case .bearerToken: // (let token):
+            throw BigParserRequestError.unauthorized
+//            subscribeHeaders["Bearer"] = token // This is not implemented on the backend yet
+        case .none:
+            throw BigParserRequestError.unauthorized
+        }
+
         guard let authId = authId else {
             throw BigParserRequestError.unauthorized
         }
-        let topic = "/topic/grid/\(gridId)/share_edit" // Must start with forward slash
 
-        var subscribeHeaders = [
-            "authId": authId,
-            "gridId": gridId
-        ]
+        let topic = "/topic/grid/\(gridId)/share_edit" // Must start with forward slash
         subscribeHeaders["shareId"] = shareId // Optional
 
         let url = environment.rawValue + Constants.websocketPath
         return WebSocketStompStream(url: url, authId: authId, topic: topic, subscribeHeaders: subscribeHeaders)
     }
 
-    public func streamGridListUpdates(_ userId: String) throws -> WebSocketStompStream {
-        guard let authId = authId else {
+    public func streamGridListUpdates(auth: Authorization, userId: String) throws -> WebSocketStompStream {
+        guard case .authId(let authId) = auth else {
             throw BigParserRequestError.unauthorized
         }
         let topic = "/topic/user/\(userId)/grid_updates" // Must start with forward slash
@@ -233,11 +250,11 @@ public final class BigParser {
         }
     }
 
-    private func request<Response: Decodable>(basePath: String = Constants.apiV2BasePath, method: HTTPMethod, path: String) async throws -> Response {
-        try await request(basePath: basePath, method: method, path: path, request: NoParameters())
+    private func request<Response: Decodable>(auth: Authorization, basePath: String = Constants.apiV2BasePath, method: HTTPMethod, path: String) async throws -> Response {
+        try await request(auth: auth, basePath: basePath, method: method, path: path, request: NoParameters())
     }
 
-    private func request<Request: Encodable, Response: Decodable>(basePath: String = Constants.apiV2BasePath, method: HTTPMethod, path: String, request: Request) async throws -> Response {
+    private func request<Request: Encodable, Response: Decodable>(auth: Authorization, basePath: String = Constants.apiV2BasePath, method: HTTPMethod, path: String, request: Request) async throws -> Response {
         return try await withCheckedThrowingContinuation({
             (continuation: CheckedContinuation<Response, Error>) in
             let url = URL(string: environment.rawValue + basePath + path)!
@@ -263,11 +280,13 @@ public final class BigParser {
             }
             urlRequest.httpMethod = method.rawValue
 
-            if let authId = authId {
-                urlRequest.addValue(authId, forHTTPHeaderField: "authId")
-            }
-            if let bearerToken = bearerToken {
-                urlRequest.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
+            switch auth {
+            case .authId(let id):
+                urlRequest.addValue(id, forHTTPHeaderField: "authId")
+            case .bearerToken(let token):
+                urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            case .none:
+                break // Do nothing
             }
 
             let urlRequestCurlString = urlRequest.curlString

@@ -10,12 +10,14 @@ import XCTest
 
 final class DeleteTests: XCTestCase {
 
+    var auth: BigParser.Authorization = .none
+
     override func setUpWithError() throws {
-        BigParser.shared.authId = Constants.authId
+        auth = BigParser.Authorization.authId(Constants.authId)
     }
 
     override func tearDownWithError() throws {
-        BigParser.shared.authId = nil
+        auth = .none
     }
 
     func testDeleteRows() async throws {
@@ -24,12 +26,12 @@ final class DeleteTests: XCTestCase {
         do {
             // Insert a new row
             let insertResponse = try await BigParser.shared.insertRows(
-                Constants.unitTestGridId,
-                request: InsertRowsRequest(insert:
-                                                        InsertRowsRequest.Insert(rows: [
-                                                            ["Random Number": "\(arc4random() % 100)"]
-                                                        ])
-                                                    )
+                auth: auth,
+                gridId: Constants.unitTestGridId,
+                request: InsertRowsRequest(insert: InsertRowsRequest.Insert(rows: [
+                    ["Random Number": "\(arc4random() % 100)"]
+                ])
+                )
             )
 
             XCTAssertTrue(insertResponse.createdRows.values.count == 1)
@@ -40,7 +42,8 @@ final class DeleteTests: XCTestCase {
 
             // Delete the row again
             let deleteResponse = try await BigParser.shared.deleteRows(
-                Constants.unitTestGridId,
+                auth: auth,
+                gridId: Constants.unitTestGridId,
                 request: DeleteRowsRequest(
                     delete: DeleteRowsRequest.Delete(rows: [DeleteRowsRequest.DeleteRow(rowId: rowId)]
                                                     )
@@ -54,7 +57,7 @@ final class DeleteTests: XCTestCase {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testDeleteRowsWithQuery() async throws {
@@ -64,10 +67,10 @@ final class DeleteTests: XCTestCase {
         let globalFilter = GlobalFilter.Filter(filterOperator: .LIKE, keyword: rowValue)
 
         do {
-
             // Insert a new row
             let insertResponse = try await BigParser.shared.insertRows(
-                Constants.unitTestGridId,
+                auth: auth,
+                gridId: Constants.unitTestGridId,
                 request: InsertRowsRequest(insert:
                                                         InsertRowsRequest.Insert(rows: [
                                                             ["Random Number": rowValue]
@@ -78,9 +81,9 @@ final class DeleteTests: XCTestCase {
             XCTAssertTrue(insertResponse.createdRows.values.count == 1)
 
             let deleteResponse = try await BigParser.shared.deleteRows(
-                Constants.unitTestGridId,
-                request:
-                    DeleteRowsByQueryRequest(singleGlobalFilter: globalFilter)
+                auth: auth,
+                gridId: Constants.unitTestGridId,
+                request: DeleteRowsByQueryRequest(singleGlobalFilter: globalFilter)
             )
             XCTAssertTrue(deleteResponse.noOfRowsDeleted == 1)
             expectation.fulfill()
@@ -88,7 +91,7 @@ final class DeleteTests: XCTestCase {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testDeleteColumns() async throws {
@@ -99,14 +102,16 @@ final class DeleteTests: XCTestCase {
         do {
             // Insert new columns
             let addResponse: [AddColumnsResponse] = try await BigParser.shared.addColumns(
-                Constants.unitTestGridId,
+                auth: auth,
+                gridId: Constants.unitTestGridId,
                 request: AddColumnsRequest(columnNames: newColumnNames))
 
             XCTAssertTrue(addResponse.count == newColumnNames.count)
 
             // Delete the columns again
             try await BigParser.shared.removeColumns(
-                Constants.unitTestGridId,
+                auth: auth,
+                gridId: Constants.unitTestGridId,
                 request: RemoveColumnsRequest(columnNames: newColumnNames)
             )
             expectation.fulfill()
@@ -114,7 +119,7 @@ final class DeleteTests: XCTestCase {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 
     func testDeleteGrid() async throws {
@@ -124,15 +129,14 @@ final class DeleteTests: XCTestCase {
 
         do {
             // First create a tab
-            let createTabResponse = try await BigParser.shared.createTab(parentGridId, request: CreateTabRequest(tabName: "Delete Grid Test"))
+            let createTabResponse = try await BigParser.shared.createTab(auth: auth, gridId: parentGridId, request: CreateTabRequest(tabName: "Delete Grid Test"))
             // Then delete it
-            try await BigParser.shared.deleteTab(createTabResponse.gridId, request: DeleteTabRequest())
+            try await BigParser.shared.deleteTab(auth: auth, gridId: createTabResponse.gridId, request: DeleteTabRequest())
             expectation.fulfill()
         } catch {
             XCTFail("\(error)")
         }
 
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
-
 }
