@@ -7,15 +7,15 @@
 
 import Foundation
 
-public enum BigParserRequestError: Error {
+public enum BigParserRequestError: Error, LocalizedError {
     case emptyResponse
     case unknownError
     case unauthorized
     case invalidGridName
 }
 
-extension BigParserRequestError: LocalizedError {
-    public var errorDescription: String? {
+public extension BigParserRequestError {
+    var errorDescription: String? {
         switch self {
         case .emptyResponse:
             return "Empty Response"
