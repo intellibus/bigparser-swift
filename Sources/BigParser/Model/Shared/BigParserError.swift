@@ -11,6 +11,7 @@ public enum BigParserRequestError: Error {
     case emptyResponse
     case unknownError
     case unauthorized
+    case invalidGridName
 }
 
 

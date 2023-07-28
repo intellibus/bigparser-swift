@@ -9,6 +9,10 @@ public final class BigParser {
 
     }
 
+    // MARK: - Validation
+
+    private let inputValidator = InputValidator()
+
     // MARK: - Type Definitions
 
     public var environment: Environment = .production
@@ -97,19 +101,29 @@ public final class BigParser {
 
     @discardableResult
     public func createGrid(auth: Authorization, request createGridRequest: CreateGridRequest) async throws -> CreateGridResponse {
-        try await request(auth: auth, method: .POST, path: "grid/create_grid", request: createGridRequest)
+        if !inputValidator.isGridNameValid(createGridRequest.gridName) {
+            throw BigParserRequestError.invalidGridName
+        }
+
+        return try await request(auth: auth, method: .POST, path: "grid/create_grid", request: createGridRequest)
     }
 
     /// The gridId represents the id of the grid which should be a parent to the new tab (which is also represented by a grid)
     @discardableResult
     public func createTab(auth: Authorization, gridId: String, request createTabRequest: CreateTabRequest) async throws -> CreateTabResponse {
-        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/create_tab", request: createTabRequest)
+        if !inputValidator.isGridNameValid(createTabRequest.tabName) {
+            throw BigParserRequestError.invalidGridName
+        }
+        return try await request(auth: auth, method: .POST, path: "grid/\(gridId)/create_tab", request: createTabRequest)
     }
 
     /// The gridId represents the id of this tab
     @discardableResult
     public func updateTab(auth: Authorization, gridId: String, request updateTabRequest: UpdateTabRequest) async throws -> UpdateTabResponse {
-        try await request(auth: auth, method: .POST, path: "grid/\(gridId)/update_tab", request: updateTabRequest)
+        if !inputValidator.isGridNameValid(updateTabRequest.tabName) {
+            throw BigParserRequestError.invalidGridName
+        }
+        return try await request(auth: auth, method: .POST, path: "grid/\(gridId)/update_tab", request: updateTabRequest)
     }
 
     @discardableResult
