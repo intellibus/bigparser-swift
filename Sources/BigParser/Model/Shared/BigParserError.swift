@@ -14,6 +14,21 @@ public enum BigParserRequestError: Error {
     case invalidGridName
 }
 
+extension BigParserRequestError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .emptyResponse:
+            return "Empty Response"
+        case .unknownError:
+            return "Unknown Error"
+        case .unauthorized:
+            return "Unauthorized"
+        case .invalidGridName:
+            return "Invalid Grid Name"
+        }
+    }
+}
+
 
 public struct BigParserErrorResponse: Decodable, Error {
     public let errorMessage: String
