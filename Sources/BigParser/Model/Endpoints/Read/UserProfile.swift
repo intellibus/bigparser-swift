@@ -10,7 +10,7 @@ import Foundation
 public struct UserProfileResponse: Codable {
     public let fullName, emailId: String
     public let alternateEmailList: [AlternateEmailList]
-    public let mobileNo: String
+    public let mobileNo: String?
     public let s3Info: S3Info?
     public let myDataFTU, parseDataFTU: Bool
     public let userGridIdList: [UserGridIdList]
