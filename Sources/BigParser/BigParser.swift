@@ -97,6 +97,10 @@ public final class BigParser {
         try await request(auth: auth, method: .POST, path: "\(gridPath(gridId, shareId: shareId))/search_keywords_count", request: searchKeywordsCountRequest)
     }
 
+    public func getUserProfile(auth: Authorization) async throws -> UserProfileResponse {
+        try await request(auth: auth, basePath: Constants.apiV1BasePath, method: .GET, path: "user/profile")
+    }
+
     // MARK: - Write operations
 
     @discardableResult

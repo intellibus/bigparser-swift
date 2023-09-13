@@ -185,4 +185,18 @@ final class ReadTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 3)
     }
 
+    func testGetUserProfile() async throws {
+        let expectation = XCTestExpectation(description: "Get current User profile")
+
+        do {
+            let _ = try await BigParser.shared.getUserProfile(
+                auth: auth)
+            expectation.fulfill()
+        } catch {
+            XCTFail("\(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 3)
+    }
+
 }
