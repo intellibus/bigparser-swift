@@ -8,7 +8,7 @@
 import Foundation
 
 public struct AddColumnsRequest: Encodable {
-    public let newColumns: [Column]
+    public var newColumns: [Column]
     public var afterColumn: String?
     public var beforeColumn: String?
 
@@ -22,13 +22,13 @@ public struct AddColumnsRequest: Encodable {
         }
     }
 
-    init(newColumns: [Column], afterColumn: String? = nil, beforeColumn: String? = nil) {
+    public init(newColumns: [AddColumnsRequest.Column], afterColumn: String? = nil, beforeColumn: String? = nil) {
         self.newColumns = newColumns
         self.afterColumn = afterColumn
         self.beforeColumn = beforeColumn
     }
 
-    init(columnNames: [String], afterColumn: String? = nil, beforeColumn: String? = nil) {
+    public init(columnNames: [String], afterColumn: String? = nil, beforeColumn: String? = nil) {
         self.init(
             newColumns: columnNames.map({ AddColumnsRequest.Column(columnName: $0, columnDesc: "") }),
             afterColumn: afterColumn,
