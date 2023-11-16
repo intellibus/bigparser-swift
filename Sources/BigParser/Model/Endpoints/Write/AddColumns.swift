@@ -15,10 +15,19 @@ public struct AddColumnsRequest: Encodable {
     public struct Column: Encodable {
         public let columnName: String
         public let columnDesc: String
-    }
-}
 
-public extension AddColumnsRequest {
+        public init(columnName: String, columnDesc: String) {
+            self.columnName = columnName
+            self.columnDesc = columnDesc
+        }
+    }
+
+    init(newColumns: [Column], afterColumn: String? = nil, beforeColumn: String? = nil) {
+        self.newColumns = newColumns
+        self.afterColumn = afterColumn
+        self.beforeColumn = beforeColumn
+    }
+
     init(columnNames: [String], afterColumn: String? = nil, beforeColumn: String? = nil) {
         self.init(
             newColumns: columnNames.map({ AddColumnsRequest.Column(columnName: $0, columnDesc: "") }),
