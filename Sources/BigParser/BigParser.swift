@@ -370,7 +370,7 @@ public final class BigParser {
                decodedResponse.errorType == .AUTHERROR {
                 // Request a new token and then re-try
                 if let newAuth = try await authDelegate?.onInvalidToken(auth) {
-                    return try await self.request<Request, Response>(auth: newAuth, basePath: basePath, method: method, path: path, request: request)
+                    return try await self.request(auth: newAuth, basePath: basePath, method: method, path: path, request: request)
                 }
             }
             throw error
