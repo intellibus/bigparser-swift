@@ -1,5 +1,9 @@
 import Foundation
 
+public protocol BigParserAuthDelegate: AnyObject {
+    func onInvalidToken(_ invalidAuth: BigParser.Authorization) async throws -> BigParser.Authorization
+}
+
 public final class BigParser {
 
     // MARK: - Singleton
@@ -40,6 +44,8 @@ public final class BigParser {
     }
 
     // MARK: - Authentication
+
+    public weak var authDelegate: BigParserAuthDelegate?
 
     @discardableResult
     public func signUp(_ signUpRequest: SignUpRequest) async throws -> SignUpResponse {
@@ -273,91 +279,102 @@ public final class BigParser {
     }
 
     private func request<Request: Encodable, Response: Decodable>(auth: Authorization, basePath: String = Constants.apiV2BasePath, method: HTTPMethod, path: String, request: Request) async throws -> Response {
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<Response, Error>) in
-            let url = URL(string: environment.rawValue + basePath + path)!
-            var urlRequest = URLRequest(url: url)
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<Response, Error>) in
+                let url = URL(string: environment.rawValue + basePath + path)!
+                var urlRequest = URLRequest(url: url)
 
-            // NoParameters type for a request parameter means we shouldn't encode any parameters
-            if request is NoParameters == false {
-                do {
-                    if method == .GET {
-                        let queryItems = try request.getUrlQueryItems()
-                        var components = URLComponents(string: url.absoluteString)!
-                        components.queryItems = queryItems
-                        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-                        urlRequest = URLRequest(url: components.url!)
-                    } else {
-                        urlRequest.httpBody = try JSONEncoder().encode(request)
-                        urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-                    }
-                } catch {
-                    continuation.resume(throwing: error)
-                    return
-                }
-            }
-            urlRequest.httpMethod = method.rawValue
-
-            switch auth {
-            case .authId(let id):
-                urlRequest.addValue(id, forHTTPHeaderField: "authId")
-            case .bearerToken(let token):
-                urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            case .none:
-                break // Do nothing
-            }
-
-            let urlRequestCurlString = urlRequest.curlString
-
-            URLSession.shared.dataTask(
-                with: urlRequest,
-                completionHandler: { data, response, error in
-                    Console.log("curl:\n\(urlRequestCurlString)")
-                    if let error = error {
-                        Console.log("Error:\n\(error)")
+                // NoParameters type for a request parameter means we shouldn't encode any parameters
+                if request is NoParameters == false {
+                    do {
+                        if method == .GET {
+                            let queryItems = try request.getUrlQueryItems()
+                            var components = URLComponents(string: url.absoluteString)!
+                            components.queryItems = queryItems
+                            components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+                            urlRequest = URLRequest(url: components.url!)
+                        } else {
+                            urlRequest.httpBody = try JSONEncoder().encode(request)
+                            urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                        }
+                    } catch {
                         continuation.resume(throwing: error)
-                    } else {
-                        if var data = data {
-                            // Replacing empty response with valid JSON
-                            if (data as NSData).length == 0 {
-                                if Response.self is AnyTypeOfArrayResponse.Type {
-                                    data = "[]".data(using: .utf8)!
-                                } else {
-                                    data = "{}".data(using: .utf8)!
-                                }
-                            }
-                            Console.log("\(String(data: data, encoding: .utf8) ?? "")")
+                        return
+                    }
+                }
+                urlRequest.httpMethod = method.rawValue
 
-                            let errorCode = (response as? HTTPURLResponse)?.statusCode ?? 200
+                switch auth {
+                case .authId(let id):
+                    urlRequest.addValue(id, forHTTPHeaderField: "authId")
+                case .bearerToken(let token):
+                    urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+                case .none:
+                    break // Do nothing
+                }
 
-                            switch errorCode {
-                            case 200...299:
-                                do {
-                                    let decodedResponse = try JSONDecoder().decode(Response.self, from: data)
-                                    continuation.resume(returning: decodedResponse)
-                                } catch {
-                                    continuation.resume(throwing: error)
-                                }
-                            default:
-                                // Try parsing Error
-                                do {
-                                    let decodedResponse = try JSONDecoder().decode(BigParserErrorResponse.self, from: data)
-                                    continuation.resume(throwing: decodedResponse)
-                                } catch {
-                                    if let dataString = String(data: data, encoding: .utf8),
-                                       let knownStringError = BigParserStringResponseError(rawValue: dataString) {
-                                        continuation.resume(throwing: knownStringError)
+                let urlRequestCurlString = urlRequest.curlString
+
+                URLSession.shared.dataTask(
+                    with: urlRequest,
+                    completionHandler: { data, response, error in
+                        Console.log("curl:\n\(urlRequestCurlString)")
+                        if let error = error {
+                            Console.log("Error:\n\(error)")
+                            continuation.resume(throwing: error)
+                        } else {
+                            if var data = data {
+                                // Replacing empty response with valid JSON
+                                if (data as NSData).length == 0 {
+                                    if Response.self is AnyTypeOfArrayResponse.Type {
+                                        data = "[]".data(using: .utf8)!
                                     } else {
-                                        continuation.resume(throwing: BigParserRequestError.unknownError)
+                                        data = "{}".data(using: .utf8)!
                                     }
                                 }
+                                Console.log("\(String(data: data, encoding: .utf8) ?? "")")
+
+                                let errorCode = (response as? HTTPURLResponse)?.statusCode ?? 200
+
+                                switch errorCode {
+                                case 200...299:
+                                    do {
+                                        let decodedResponse = try JSONDecoder().decode(Response.self, from: data)
+                                        continuation.resume(returning: decodedResponse)
+                                    } catch {
+                                        continuation.resume(throwing: error)
+                                    }
+                                default:
+                                    // Try parsing Error
+                                    do {
+                                        let decodedResponse = try JSONDecoder().decode(BigParserErrorResponse.self, from: data)
+                                        continuation.resume(throwing: decodedResponse)
+                                    } catch {
+                                        if let dataString = String(data: data, encoding: .utf8),
+                                           let knownStringError = BigParserStringResponseError(rawValue: dataString) {
+                                            continuation.resume(throwing: knownStringError)
+                                        } else {
+                                            continuation.resume(throwing: BigParserRequestError.unknownError)
+                                        }
+                                    }
+                                }
+                            } else {
+                                continuation.resume(throwing: BigParserRequestError.emptyResponse)
                             }
-                        } else {
-                            continuation.resume(throwing: BigParserRequestError.emptyResponse)
                         }
-                    }
-                }).resume()
-        })
+                    }).resume()
+            })
+        } catch {
+            if let decodedResponse = error as? BigParserErrorResponse,
+               decodedResponse.errorType == .AUTHERROR {
+                // Request a new token and then re-try
+                if let newAuth = try await authDelegate?.onInvalidToken(auth) {
+                    return try await self.request<Request, Response>(auth: newAuth, basePath: basePath, method: method, path: path, request: request)
+                }
+            }
+            throw error
+        }
     }
 }
 
