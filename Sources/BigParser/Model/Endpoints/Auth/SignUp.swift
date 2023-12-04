@@ -8,9 +8,9 @@
 import Foundation
 
 public struct SignUpRequest: Encodable {
-    let fullName: String
-    let emailId: String
-    let password: String
+    public let fullName: String
+    public let emailId: String
+    public let password: String
 
     public init(fullName: String, emailId: String, password: String) {
         self.fullName = fullName
