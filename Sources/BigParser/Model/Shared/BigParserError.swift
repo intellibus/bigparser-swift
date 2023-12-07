@@ -35,10 +35,27 @@ public struct BigParserErrorResponse: Decodable, Error {
     public let errorType: ErrorType
 
     // TODO: fill up all the valid types and replace errorType's String type with ErrorType
-    public enum ErrorType: String, Decodable {
+    public enum ErrorType: String, Decodable, CustomStringConvertible {
         case SYSTEMERROR
         case DATAERROR
         case AUTHERROR
+
+        public var description: String {
+            switch self {
+            case .SYSTEMERROR:
+                return "System Error"
+            case .DATAERROR:
+                return "Data Error"
+            case .AUTHERROR:
+                return "Auth Error"
+            }
+        }
+    }
+}
+
+extension BigParserErrorResponse: LocalizedError {
+    public var errorDescription: String? {
+        "BigParser \(errorType.description): \(errorMessage)"
     }
 }
 
