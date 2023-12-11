@@ -16,7 +16,7 @@ public struct QueryMetadataResponse: Codable {
     public let fileId, fileExtension, fileSource: String?
     public let auditGridId: String
     public let originalGridId: String?
-    public let lastUpdatedTimeInBigParser: Int
+    public let lastUpdatedTimeInBigParser: String
     public let lastUpdatedBy: String?
     public let tabName: String
     public let showRowId: Bool
