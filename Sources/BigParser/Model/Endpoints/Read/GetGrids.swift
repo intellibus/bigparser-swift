@@ -51,8 +51,8 @@ public struct GetGridsResponse: Codable {
         public let shareCount: Int?
         //    public let s3GridImageInfo: JSONNull?
         //    public let filters: JSONNull?
-        public let updatedDateTime: String?
-        public let createdDateTime: String?
+        public let updatedDateTime: Int?
+        public let createdDateTime: Int?
         public let isDeleted: Bool?
         //    public let syncStatus: JSONNull?
         //    public let gridSource: JSONNull?
